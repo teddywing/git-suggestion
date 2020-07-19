@@ -2,6 +2,7 @@
 
 
 use github_rs::client::{Executor, Github};
+use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
 
@@ -10,24 +11,27 @@ use thiserror::Error;
 pub enum Error {
     #[error("GitHub client error: {0}")]
     Github(String),
+
+    #[error("Unable to deserialize")]
+    Deserialize(#[from] serde_json::error::Error),
 }
 
 
-pub struct Suggestion<'a> {
+pub struct Client<'a> {
     client: Github,
     owner: &'a str,
     repo: &'a str,
 }
 
-impl<'a> Suggestion<'a> {
+impl<'a> Client<'a> {
     pub fn new(token: &str, owner: &'a str, repo: &'a str) -> Self {
         let client = Github::new(&token).unwrap();
 
-        Suggestion { client, owner, repo }
+        Client { client, owner, repo }
     }
 
-    pub fn fetch(&self, id: &str) -> Result<(), Error> {
-        let comment = self.client
+    pub fn fetch(&self, id: &str) -> Result<Suggestion, Error> {
+        let response = self.client
             .get()
             .repos()
             .owner(self.owner)
@@ -37,16 +41,28 @@ impl<'a> Suggestion<'a> {
             .id(id)
             .execute::<Value>();
 
-        match comment {
-            Ok((_, _, json)) => {
-                println!("{:?}", json);
+        match response {
+            Ok((_, _, Some(json))) => {
+                let suggestion = serde_json::from_value(json)?;
 
-                Ok(())
+                Ok(suggestion)
             },
+            Ok((_, _, None)) => Err(Error::Github("no response".to_owned())),
             Err(e) => Err(Error::Github(e.to_string())),
         }
     }
+}
 
+#[derive(Debug, Deserialize)]
+pub struct Suggestion {
+    #[serde(rename = "diff_hunk")]
+    diff: String,
+
+    #[serde(rename = "body")]
+    suggestion: String,
+}
+
+impl Suggestion {
     pub fn patch(&self) {
     }
 }
@@ -57,11 +73,14 @@ mod tests {
 
     #[test]
     fn suggestion_fetch_gets_pull_request_comment() {
-        let suggestion = Suggestion::new(
+        let client = Client::new(
             env!("GITHUB_TOKEN"),
             "cli",
             "cli",
         );
-        suggestion.fetch("438947607").unwrap();
+
+        let suggestion = client.fetch("438947607").unwrap();
+
+        println!("{:?}", suggestion);
     }
 }
