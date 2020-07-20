@@ -2,6 +2,7 @@
 
 
 use github_rs::client::{Executor, Github};
+use regex::Regex;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
@@ -63,7 +64,31 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
-    pub fn patch(&self) {
+    pub fn patch(&self) -> String {
+        let mut diff: Vec<_> = self.diff.lines()
+            .filter(|l| !l.starts_with("-"))
+            .map(|l| {
+                if l.starts_with("+") {
+                    return l.replacen("+", " ", 1);
+                }
+
+                l.to_owned()
+            })
+            .collect();
+
+        let last = diff.len() - 1;
+        diff[last] = diff.last().unwrap()
+            .replacen(" ", "-", 1);
+
+        diff.push(self.suggestion());
+
+        diff.join("\n")
+    }
+
+    fn suggestion(&self) -> String {
+        let re = Regex::new(r"(?s).*```\s*suggestion\n").unwrap();
+        let s = re.replace(&self.suggestion, "+");
+        s.replace("```", "")
     }
 }
 
@@ -82,5 +107,40 @@ mod tests {
         let suggestion = client.fetch("438947607").unwrap();
 
         println!("{:?}", suggestion);
+    }
+
+    #[test]
+    fn suggestion_patch_generates_patch() {
+        let suggestion = Suggestion {
+            diff: r#"@@ -1, 9 +1, 11 @@
+ package command
+ 
+ import (
++	"bufio" // used to input comment
+ 	"errors"
+ 	"fmt"
+ 	"io"
++	"os" // used to input comment"#.to_owned(),
+            suggestion: r#"It's ok to leave these uncommented
+
+```suggestion
+	"os"
+```"#.to_owned(),
+        };
+
+        assert_eq!(
+            suggestion.patch(),
+            r#"@@ -1, 9 +1, 11 @@
+ package command
+ 
+ import (
+ 	"bufio" // used to input comment
+ 	"errors"
+ 	"fmt"
+ 	"io"
+-	"os" // used to input comment
++	"os"
+"#,
+        );
     }
 }
