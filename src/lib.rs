@@ -111,6 +111,10 @@ mod tests {
 
     #[test]
     fn suggestion_patch_generates_patch() {
+        // Diff from gabgodBB (https://github.com/gabgodBB) and suggestion from
+        // probablycorey (https://github.com/probablycorey) in this pull
+        // request: https://github.com/cli/cli/pull/1123
+
         let suggestion = Suggestion {
             diff: r#"@@ -1, 9 +1, 11 @@
  package command
