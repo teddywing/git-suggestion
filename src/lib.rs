@@ -86,7 +86,7 @@ impl Suggestion {
     }
 
     fn suggestion(&self) -> String {
-        let re = Regex::new(r"(?s).*```\s*suggestion\n").unwrap();
+        let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
         let s = re.replace(&self.suggestion, "+");
         s.replace("```", "")
     }
