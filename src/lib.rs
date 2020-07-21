@@ -147,4 +147,56 @@ mod tests {
 "#,
         );
     }
+
+    #[test]
+    fn unified_diff() {
+        use unidiff::PatchSet;
+
+        let diff = r#"--- a/command/pr.go
++++ b/command/pr.go
+@@ -1,9 +1,11 @@
+ package command
+ 
+ import (
++	"bufio" // used to input comment
+ 	"errors"
+ 	"fmt"
+ 	"io"
++	"os" // used to input comment
+"#;
+
+        let mut patch = PatchSet::new();
+        patch.parse(diff).unwrap();
+
+        println!("{:?}", patch);
+        println!("{}", patch);
+
+        let lines = patch.files_mut()[0].hunks_mut()[0].lines_mut();
+
+        // for line in &lines {
+        //     if line.is_removed() {
+        //     } else if line.is_added() {
+        //         line.line_type = unidiff::LINE_TYPE_CONTEXT.to_owned();
+        //     }
+        // }
+
+        lines
+            .iter_mut()
+            .filter(|l| !l.is_removed())
+            // .map(|l| {
+            .for_each(|l| {
+                if l.is_added() {
+                    l.line_type = unidiff::LINE_TYPE_CONTEXT.to_owned();
+                }
+            });
+
+        lines[lines.len() - 2].line_type = unidiff::LINE_TYPE_REMOVED.to_owned();
+
+        patch.files_mut()[0].hunks_mut()[0].append(unidiff::Line::new(
+            r#"	"os""#,
+            unidiff::LINE_TYPE_ADDED,
+        ));
+
+        println!("{}", patch);
+    }
 }
