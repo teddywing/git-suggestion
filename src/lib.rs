@@ -199,4 +199,9 @@ mod tests {
 
         println!("{}", patch);
     }
+
+    #[test]
+    fn patches_file() {
+        // File::open("../testdata/");
+    }
 }
