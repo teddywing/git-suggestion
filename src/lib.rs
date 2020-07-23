@@ -204,4 +204,26 @@ mod tests {
     fn patches_file() {
         // File::open("../testdata/");
     }
+
+    #[test]
+    fn read_git_blob() {
+        use std::path::Path;
+
+        use git2::Repository;
+
+        let repo = Repository::open("./private/suggestion-test").unwrap();
+        let commit = repo.find_commit("b58be52880a0a0c0d397052351be31f19acdeca4".parse().unwrap()).unwrap();
+
+        let object = commit
+            .tree().unwrap()
+            .get_path(Path::new("src/server.rs")).unwrap()
+            .to_object(&repo).unwrap();
+
+        let blob = object
+            .as_blob().unwrap()
+            .content();
+
+        println!("{:?}", commit);
+        println!("{}", std::str::from_utf8(blob).unwrap());
+    }
 }
