@@ -66,7 +66,7 @@ pub struct Suggestion {
     diff: String,
 
     #[serde(rename = "body")]
-    suggestion: String,
+    comment: String,
 
     path: String,
 
@@ -98,7 +98,7 @@ impl Suggestion {
 
     fn suggestion(&self) -> String {
         let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
-        let s = re.replace(&self.suggestion, "+");
+        let s = re.replace(&self.comment, "+");
         s.replace("```", "")
     }
 
@@ -172,7 +172,7 @@ mod tests {
  	"fmt"
  	"io"
 +	"os" // used to input comment"#.to_owned(),
-            suggestion: r#"It's ok to leave these uncommented
+            comment: r#"It's ok to leave these uncommented
 
 ```suggestion
 	"os"
