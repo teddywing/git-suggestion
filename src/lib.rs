@@ -177,6 +177,9 @@ mod tests {
 ```suggestion
 	"os"
 ```"#.to_owned(),
+            path: "".to_owned(),
+            original_start_line: 8,
+            original_end_line: 8,
         };
 
         assert_eq!(
