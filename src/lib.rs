@@ -121,27 +121,12 @@ impl Suggestion {
 
         fs::copy(repo_root.join(&self.path), new.path()).unwrap();
 
-        let reader = BufReader::new(new);
         let mut original = OpenOptions::new()
             .write(true)
             .truncate(true)
             .open(repo_root.join(&self.path)).unwrap();
 
-        for (i, line) in reader.lines().enumerate() {
-            match line {
-                Ok(l) => {
-                    if i < self.original_start_line
-                            || i > self.original_end_line {
-                        writeln!(original, "{}", l).unwrap();
-                    } else if i == self.original_end_line {
-                        write!(original, "{}", self.suggestion()).unwrap();
-                    }
-                },
-                Err(e) => panic!(e),
-            }
-        }
-
-        Ok(())
+        self.apply_to(&mut original)
     }
 
     fn apply_to<W: Write>(&self, writer: &mut W) ->Result<(), Error> {
