@@ -75,8 +75,9 @@ pub struct Suggestion {
 
     path: String,
 
-    // TODO: start_line can be null
-    original_start_line: usize,
+    original_start_line: Option<usize>,
+
+    #[serde(rename = "original_line")]
     original_end_line: usize,
 }
 
@@ -144,7 +145,8 @@ impl Suggestion {
         for (i, line) in reader.lines().enumerate() {
             match line {
                 Ok(l) => {
-                    if i < self.original_start_line
+                    if self.original_start_line.is_none()
+                            || i < self.original_start_line.unwrap()
                             || i > self.original_end_line {
                         writeln!(writer, "{}", l).unwrap();
                     } else if i == self.original_end_line {
@@ -199,7 +201,7 @@ mod tests {
 	"os"
 ```"#.to_owned(),
             path: "".to_owned(),
-            original_start_line: 8,
+            original_start_line: Some(8),
             original_end_line: 8,
         };
 
@@ -327,7 +329,7 @@ mod tests {
       Long time the manxome foe he sought—
 ```"#.to_owned(),
             path: temp.path().to_string_lossy().to_string(),
-            original_start_line: 6,
+            original_start_line: Some(6),
             original_end_line: 7,
         };
 
