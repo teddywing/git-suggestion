@@ -1,11 +1,17 @@
 #![warn(rust_2018_idioms)]
 
 
+use std::fs;
+use std::fs::File;
+use std::io::{BufRead, BufReader, Write};
+
+use git2::Repository;
 use github_rs::client::{Executor, Github};
 use regex::Regex;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
+use tempfile::tempfile;
 
 
 #[derive(Debug, Error)]
@@ -61,6 +67,11 @@ pub struct Suggestion {
 
     #[serde(rename = "body")]
     suggestion: String,
+
+    path: String,
+
+    original_start_line: usize,
+    original_end_line: usize,
 }
 
 impl Suggestion {
@@ -89,6 +100,36 @@ impl Suggestion {
         let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
         let s = re.replace(&self.suggestion, "+");
         s.replace("```", "")
+    }
+
+    fn apply(&self) -> Result<(), Error> {
+        let repo = Repository::open(".").unwrap();
+        let repo_root = repo.workdir().unwrap();
+
+        let original = File::open(repo_root.join(&self.path)).unwrap();
+        let metadata = original.metadata().unwrap();
+        let created_at = metadata.created().unwrap();
+        let mut reader = BufReader::new(original);
+
+        let mut new = tempfile().unwrap();
+
+        for (i, line) in reader.lines().enumerate() {
+            match line {
+                Ok(l) => {
+                    if i < self.original_start_line
+                            || i > self.original_end_line {
+                        writeln!(new, "{}", l).unwrap();
+                    } else if i == self.original_end_line {
+                        write!(new, "{}", self.suggestion()).unwrap();
+                    }
+                },
+                Err(e) => panic!(e),
+            }
+        }
+
+        fs::rename(new, original).unwrap();
+
+        Ok(())
     }
 }
 
