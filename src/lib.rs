@@ -147,12 +147,12 @@ impl Suggestion {
         for (i, line) in reader.lines().enumerate() {
             match line {
                 Ok(l) => {
-                    if self.original_start_line.is_none()
+                    if i == self.original_end_line {
+                        write!(writer, "{}", self.suggestion()).unwrap();
+                    } else if self.original_start_line.is_none()
                             || i < self.original_start_line.unwrap()
                             || i > self.original_end_line {
                         writeln!(writer, "{}", l).unwrap();
-                    } else if i == self.original_end_line {
-                        write!(writer, "{}", self.suggestion()).unwrap();
                     }
                 },
                 Err(e) => panic!(e),
