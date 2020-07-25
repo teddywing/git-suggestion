@@ -145,13 +145,15 @@ impl Suggestion {
         let reader = BufReader::new(original);
 
         for (i, line) in reader.lines().enumerate() {
+            let line_number = i + 1;
+
             match line {
                 Ok(l) => {
-                    if i == self.original_end_line {
+                    if line_number == self.original_end_line {
                         write!(writer, "{}", self.suggestion()).unwrap();
                     } else if self.original_start_line.is_none()
-                            || i < self.original_start_line.unwrap()
-                            || i > self.original_end_line {
+                            || line_number < self.original_start_line.unwrap()
+                            || line_number > self.original_end_line {
                         writeln!(writer, "{}", l).unwrap();
                     }
                 },
