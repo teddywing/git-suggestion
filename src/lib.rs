@@ -70,6 +70,7 @@ pub struct Suggestion {
 
     path: String,
 
+    // TODO: start_line can be null
     original_start_line: usize,
     original_end_line: usize,
 }
@@ -91,14 +92,20 @@ impl Suggestion {
         diff[last] = diff.last().unwrap()
             .replacen(" ", "-", 1);
 
-        diff.push(self.suggestion());
+        diff.push(self.suggestion_patch());
 
         diff.join("\n")
     }
 
-    fn suggestion(&self) -> String {
+    fn suggestion_patch(&self) -> String {
         let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
         let s = re.replace(&self.comment, "+");
+        s.replace("```", "")
+    }
+
+    fn suggestion(&self) -> String {
+        let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
+        let s = re.replace(&self.comment, "");
         s.replace("```", "")
     }
 
@@ -128,6 +135,30 @@ impl Suggestion {
                         writeln!(original, "{}", l).unwrap();
                     } else if i == self.original_end_line {
                         write!(original, "{}", self.suggestion()).unwrap();
+                    }
+                },
+                Err(e) => panic!(e),
+            }
+        }
+
+        Ok(())
+    }
+
+    fn apply_to<W: Write>(&self, writer: &mut W) ->Result<(), Error> {
+        let repo = Repository::open(".").unwrap();
+        let repo_root = repo.workdir().unwrap();
+
+        let original = File::open(repo_root.join(&self.path)).unwrap();
+        let reader = BufReader::new(original);
+
+        for (i, line) in reader.lines().enumerate() {
+            match line {
+                Ok(l) => {
+                    if i < self.original_start_line
+                            || i > self.original_end_line {
+                        writeln!(writer, "{}", l).unwrap();
+                    } else if i == self.original_end_line {
+                        write!(writer, "{}", self.suggestion()).unwrap();
                     }
                 },
                 Err(e) => panic!(e),
@@ -275,5 +306,59 @@ mod tests {
 
         println!("{:?}", commit);
         println!("{}", std::str::from_utf8(blob).unwrap());
+    }
+
+    #[test]
+    fn suggestion_apply_to_writes_patch_to_writer() {
+        use std::io::Cursor;
+
+        use tempfile::NamedTempFile;
+
+
+        let mut temp = NamedTempFile::new().unwrap();
+        let original = r#"
+     ‘Beware the Jabberwock, my son!
+      The jaws that bite, the claws that catch!
+     Beware the Jubjub bird, and shun
+      The frumious Bandersnatch!’
+
+     He took his vorpal blade in hand:
+      Long time the manxome foe he sought--
+     So rested he by the Tumtum tree,
+      And stood awhile in thought.
+"#;
+
+        write!(temp, "{}", original).unwrap();
+
+        let suggestion = Suggestion {
+            diff: "".to_owned(),
+            comment: r#"``` suggestion
+     He took his vorpal sword in hand:
+      Long time the manxome foe he sought—
+```"#.to_owned(),
+            path: temp.path().to_string_lossy().to_string(),
+            original_start_line: 6,
+            original_end_line: 7,
+        };
+
+        let expected = r#"
+     ‘Beware the Jabberwock, my son!
+      The jaws that bite, the claws that catch!
+     Beware the Jubjub bird, and shun
+      The frumious Bandersnatch!’
+
+     He took his vorpal sword in hand:
+      Long time the manxome foe he sought—
+     So rested he by the Tumtum tree,
+      And stood awhile in thought.
+"#;
+
+        let mut actual = Cursor::new(Vec::new());
+        suggestion.apply_to(&mut actual).unwrap();
+
+        assert_eq!(
+            std::str::from_utf8(&actual.into_inner()).unwrap(),
+            expected,
+        );
     }
 }
