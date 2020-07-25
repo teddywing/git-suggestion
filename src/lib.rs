@@ -2,7 +2,7 @@
 
 
 use std::fs;
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
 
 use git2::Repository;
@@ -11,7 +11,7 @@ use regex::Regex;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
-use tempfile::tempfile;
+use tempfile::NamedTempFile;
 
 
 #[derive(Debug, Error)]
@@ -106,28 +106,33 @@ impl Suggestion {
         let repo = Repository::open(".").unwrap();
         let repo_root = repo.workdir().unwrap();
 
-        let original = File::open(repo_root.join(&self.path)).unwrap();
-        let metadata = original.metadata().unwrap();
-        let created_at = metadata.created().unwrap();
-        let mut reader = BufReader::new(original);
+        // let original = File::open(repo_root.join(&self.path)).unwrap();
+        // let metadata = original.metadata().unwrap();
+        // let created_at = metadata.created().unwrap();
 
-        let mut new = tempfile().unwrap();
+        let new = NamedTempFile::new().unwrap();
+
+        fs::copy(repo_root.join(&self.path), new.path()).unwrap();
+
+        let reader = BufReader::new(new);
+        let mut original = OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(repo_root.join(&self.path)).unwrap();
 
         for (i, line) in reader.lines().enumerate() {
             match line {
                 Ok(l) => {
                     if i < self.original_start_line
                             || i > self.original_end_line {
-                        writeln!(new, "{}", l).unwrap();
+                        writeln!(original, "{}", l).unwrap();
                     } else if i == self.original_end_line {
-                        write!(new, "{}", self.suggestion()).unwrap();
+                        write!(original, "{}", self.suggestion()).unwrap();
                     }
                 },
                 Err(e) => panic!(e),
             }
         }
-
-        fs::rename(new, original).unwrap();
 
         Ok(())
     }
