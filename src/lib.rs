@@ -1,6 +1,11 @@
 #![warn(rust_2018_idioms)]
 
 
+mod url;
+
+pub use crate::url::SuggestionUrl;
+
+
 use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
@@ -109,7 +114,7 @@ impl Suggestion {
         s.replace("```", "")
     }
 
-    fn apply(&self) -> Result<(), Error> {
+    pub fn apply(&self) -> Result<(), Error> {
         let repo = Repository::open(".").unwrap();
         let repo_root = repo.workdir().unwrap();
 
