@@ -9,6 +9,7 @@ pub use crate::url::SuggestionUrl;
 use std::fs;
 use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, Write};
+use std::path::Path;
 
 use git2::Repository;
 use github_rs::client::{Executor, Github};
@@ -132,14 +133,15 @@ impl Suggestion {
             .truncate(true)
             .open(repo_root.join(&self.path)).unwrap();
 
-        self.apply_to(&mut original)
+        self.apply_to(new.path(), &mut original)
     }
 
-    fn apply_to<W: Write>(&self, writer: &mut W) ->Result<(), Error> {
-        let repo = Repository::open(".").unwrap();
-        let repo_root = repo.workdir().unwrap();
-
-        let original = File::open(repo_root.join(&self.path)).unwrap();
+    fn apply_to<P: AsRef<Path>, W: Write>(
+        &self,
+        from: P,
+        writer: &mut W,
+    ) -> Result<(), Error> {
+        let original = File::open(from).unwrap();
         let reader = BufReader::new(original);
 
         for (i, line) in reader.lines().enumerate() {
@@ -346,7 +348,7 @@ mod tests {
 "#;
 
         let mut actual = Cursor::new(Vec::new());
-        suggestion.apply_to(&mut actual).unwrap();
+        suggestion.apply_to(temp.path(), &mut actual).unwrap();
 
         assert_eq!(
             std::str::from_utf8(&actual.into_inner()).unwrap(),
