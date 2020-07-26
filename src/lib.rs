@@ -320,11 +320,6 @@ mod tests {
     }
 
     #[test]
-    fn patches_file() {
-        // File::open("../testdata/");
-    }
-
-    #[test]
     fn read_git_blob() {
         use std::path::Path;
 
