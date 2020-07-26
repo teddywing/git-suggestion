@@ -66,6 +66,12 @@ impl<'a> Client<'a> {
     }
 }
 
+#[derive(Debug, PartialEq)]
+enum LineEnding {
+    Lf,
+    CrLf,
+}
+
 #[derive(Debug, Deserialize)]
 pub struct Suggestion {
     #[serde(rename = "diff_hunk")]
@@ -111,9 +117,20 @@ impl Suggestion {
     }
 
     fn suggestion(&self) -> String {
+        self.suggestion_with_line_ending(&LineEnding::Lf)
+    }
+
+    fn suggestion_with_line_ending(&self, line_ending: &LineEnding) -> String {
         let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
         let s = re.replace(&self.comment, "");
-        s.replace("```", "")
+        let s = s.replace("```", "");
+
+        // Suggestion blocks use CRLF by default.
+        if *line_ending == LineEnding::Lf {
+            return s.replace('\r', "");
+        }
+
+        s
     }
 
     pub fn apply(&self) -> Result<(), Error> {
@@ -143,14 +160,31 @@ impl Suggestion {
     ) -> Result<(), Error> {
         let original = File::open(from).unwrap();
         let reader = BufReader::new(original);
+        let mut line_ending = LineEnding::Lf;
 
         for (i, line) in reader.lines().enumerate() {
             let line_number = i + 1;
 
             match line {
                 Ok(l) => {
+                    // Determine which line endings the file uses by looking at
+                    // the first line. If the second-to-last character on the
+                    // first line is "\r", assume CRLF.  Otherwise, default to
+                    // LF.
+                    if line_number == 1 {
+                        if let Some(c) = l.chars().rev().nth(2) {
+                            if c == '\r' {
+                                line_ending = LineEnding::CrLf;
+                            }
+                        }
+                    }
+
                     if line_number == self.original_end_line {
-                        write!(writer, "{}", self.suggestion()).unwrap();
+                        write!(
+                            writer,
+                            "{}",
+                            self.suggestion_with_line_ending(&line_ending),
+                        ).unwrap();
                     } else if self.original_start_line.is_none()
                             || line_number < self.original_start_line.unwrap()
                             || line_number > self.original_end_line {
