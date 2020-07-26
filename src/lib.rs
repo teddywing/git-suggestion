@@ -282,6 +282,7 @@ mod tests {
 ```suggestion
 	"os"
 ```"#.to_owned(),
+            commit: "".to_owned(),
             path: "".to_owned(),
             original_start_line: Some(8),
             original_end_line: 8,
@@ -405,6 +406,7 @@ mod tests {
      He took his vorpal sword in hand:
       Long time the manxome foe he sought—
 ```"#.to_owned(),
+            commit: "".to_owned(),
             path: temp.path().to_string_lossy().to_string(),
             original_start_line: Some(7),
             original_end_line: 8,
