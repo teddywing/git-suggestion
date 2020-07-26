@@ -168,15 +168,9 @@ impl Suggestion {
             match line {
                 Ok(l) => {
                     // Determine which line endings the file uses by looking at
-                    // the first line. If the second-to-last character on the
-                    // first line is "\r", assume CRLF.  Otherwise, default to
-                    // LF.
-                    if line_number == 1 {
-                        if let Some(c) = l.chars().rev().nth(2) {
-                            if c == '\r' {
-                                line_ending = LineEnding::CrLf;
-                            }
-                        }
+                    // the first line.
+                    if line_number == 1 && is_line_crlf(&l) {
+                        line_ending = LineEnding::CrLf;
                     }
 
                     if line_number == self.original_end_line {
@@ -197,6 +191,20 @@ impl Suggestion {
 
         Ok(())
     }
+}
+
+/// Determine the line ending for `line`.
+///
+/// If the second-to-last character on the first line is "\r", assume CRLF.
+/// Otherwise, default to LF.
+fn is_line_crlf(line: &str) -> bool {
+    if let Some(c) = line.chars().rev().nth(2) {
+        if c == '\r' {
+            return true;
+        }
+    }
+
+    false
 }
 
 #[cfg(test)]
