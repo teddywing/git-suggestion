@@ -127,8 +127,9 @@ impl Suggestion {
 
         let blob = object.as_blob().unwrap();
 
+        let blob_reader = BufReader::new(blob.content());
         let mut new = BufWriter::new(Vec::new());
-        self.apply_to(&self.path, &mut new).unwrap();
+        self.apply_to(blob_reader, &mut new).unwrap();
         let new_buffer = new.into_inner().unwrap();
 
         let mut diff = Patch::from_blob_and_buffer(
@@ -186,16 +187,15 @@ impl Suggestion {
             .truncate(true)
             .open(repo_root.join(&self.path)).unwrap();
 
-        self.apply_to(new.path(), &mut original)
+        let new_buffer = BufReader::new(new);
+        self.apply_to(new_buffer, &mut original)
     }
 
-    fn apply_to<P: AsRef<Path>, W: Write>(
+    fn apply_to<R: BufRead, W: Write>(
         &self,
-        from: P,
+        reader: R,
         writer: &mut W,
     ) -> Result<(), Error> {
-        let original = File::open(from).unwrap();
-        let reader = BufReader::new(original);
         let mut line_ending = LineEnding::Lf;
 
         for (i, line) in reader.lines().enumerate() {
@@ -382,10 +382,8 @@ mod tests {
     fn suggestion_apply_to_writes_patch_to_writer() {
         use std::io::Cursor;
 
-        use tempfile::NamedTempFile;
 
-
-        let mut temp = NamedTempFile::new().unwrap();
+        let mut original_buffer = Vec::new();
         let original = r#"
      ‘Beware the Jabberwock, my son!
       The jaws that bite, the claws that catch!
@@ -398,7 +396,7 @@ mod tests {
       And stood awhile in thought.
 "#;
 
-        write!(temp, "{}", original).unwrap();
+        write!(original_buffer, "{}", original).unwrap();
 
         let suggestion = Suggestion {
             diff: "".to_owned(),
@@ -407,7 +405,7 @@ mod tests {
       Long time the manxome foe he sought—
 ```"#.to_owned(),
             commit: "".to_owned(),
-            path: temp.path().to_string_lossy().to_string(),
+            path: "".to_owned(),
             original_start_line: Some(7),
             original_end_line: 8,
         };
@@ -424,8 +422,9 @@ mod tests {
       And stood awhile in thought.
 "#;
 
+        let original_reader = Cursor::new(original_buffer);
         let mut actual = Cursor::new(Vec::new());
-        suggestion.apply_to(temp.path(), &mut actual).unwrap();
+        suggestion.apply_to(original_reader, &mut actual).unwrap();
 
         assert_eq!(
             std::str::from_utf8(&actual.into_inner()).unwrap(),
