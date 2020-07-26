@@ -333,8 +333,8 @@ mod tests {
       Long time the manxome foe he sought—
 ```"#.to_owned(),
             path: temp.path().to_string_lossy().to_string(),
-            original_start_line: Some(6),
-            original_end_line: 7,
+            original_start_line: Some(7),
+            original_end_line: 8,
         };
 
         let expected = r#"
