@@ -8,10 +8,10 @@ pub use crate::url::SuggestionUrl;
 
 use std::fs;
 use std::fs::{File, OpenOptions};
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
 
-use git2::Repository;
+use git2::{Patch, Repository};
 use github_rs::client::{Executor, Github};
 use regex::Regex;
 use serde::Deserialize;
@@ -80,6 +80,9 @@ pub struct Suggestion {
     #[serde(rename = "body")]
     comment: String,
 
+    #[serde(rename = "original_commit_id")]
+    commit: String,
+
     path: String,
 
     original_start_line: Option<usize>,
@@ -89,6 +92,7 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
+    // TODO: Rename to `diff`
     pub fn patch(&self) -> String {
         let mut diff: Vec<_> = self.diff.lines()
             .filter(|l| !l.starts_with("-"))
@@ -108,6 +112,38 @@ impl Suggestion {
         diff.push(self.suggestion_patch());
 
         diff.join("\n")
+    }
+
+    pub fn diff(&self) -> String {
+        let repo = Repository::open(".").unwrap();
+        let commit = repo.find_commit(self.commit.parse().unwrap()).unwrap();
+
+        let path = Path::new(&self.path);
+
+        let object = commit
+            .tree().unwrap()
+            .get_path(path).unwrap()
+            .to_object(&repo).unwrap();
+
+        let blob = object.as_blob().unwrap();
+
+        let mut new = BufWriter::new(Vec::new());
+        self.apply_to(&self.path, &mut new).unwrap();
+        let new_buffer = new.into_inner().unwrap();
+
+        let mut diff = Patch::from_blob_and_buffer(
+            blob,
+            Some(&path),
+            &new_buffer,
+            Some(&path),
+            None,
+        ).unwrap();
+
+        diff.to_buf()
+            .unwrap()
+            .as_str()
+            .unwrap_or("")
+            .to_owned()
     }
 
     fn suggestion_patch(&self) -> String {
