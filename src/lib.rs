@@ -116,6 +116,11 @@ impl Suggestion {
 
     pub fn diff(&self) -> String {
         let repo = Repository::open(".").unwrap();
+
+        self.diff_with_repo(&repo)
+    }
+
+    fn diff_with_repo(&self, repo: &Repository) -> String {
         let commit = repo.find_commit(self.commit.parse().unwrap()).unwrap();
 
         let path = Path::new(&self.path);
@@ -376,6 +381,97 @@ mod tests {
 
         println!("{:?}", commit);
         println!("{}", std::str::from_utf8(blob).unwrap());
+    }
+
+    #[test]
+    fn suggestion_diff_with_repo_generates_diff() {
+        use tempfile::tempdir;
+
+
+        let git_root = tempdir().unwrap();
+        let repo = Repository::init(git_root.path()).unwrap();
+
+        let file = r#"
+     ‘Beware the Jabberwock, my son!
+      The jaws that bite, the claws that catch!
+     Beware the Jubjub bird, and shun
+      The frumious Bandersnatch!’
+
+     He took his vorpal blade in hand:
+      Long time the manxome foe he sought--
+     So rested he by the Tumtum tree,
+      And stood awhile in thought.
+"#;
+
+        let path = "poems/Jabberwocky.txt";
+
+        let mut index = repo.index().unwrap();
+        index.add_frombuffer(
+            &git2::IndexEntry {
+                ctime: git2::IndexTime::new(0, 0),
+                mtime: git2::IndexTime::new(0, 0),
+                dev: 0,
+                ino: 0,
+                mode: 0o100644,
+                uid: 0,
+                gid: 0,
+                file_size: file.len() as u32,
+                id: git2::Oid::zero(),
+                flags: 0,
+                flags_extended: 0,
+                path: path.as_bytes().to_vec(),
+            },
+            file.as_bytes(),
+        ).unwrap();
+        let tree_oid = index.write_tree().unwrap();
+        let tree = repo.find_tree(tree_oid).unwrap();
+
+        let author = git2::Signature::now(
+            "Oshino Shinobu",
+            "oshino.shinobu@example.com",
+        ).unwrap();
+
+        let commit = repo.commit(
+            Some("HEAD"),
+            &author,
+            &author,
+            "Sample commit",
+            &tree,
+            &[],
+        ).unwrap();
+
+        let suggestion = Suggestion {
+            diff: "".to_owned(),
+            comment: r#"``` suggestion
+     He took his vorpal sword in hand:
+      Long time the manxome foe he sought—
+```"#.to_owned(),
+            commit: commit.to_string(),
+            path: path.to_owned(),
+            original_start_line: Some(7),
+            original_end_line: 8,
+        };
+
+        let expected = r#"diff --git a/poems/Jabberwocky.txt b/poems/Jabberwocky.txt
+index 89840a2..06acdfc 100644
+--- a/poems/Jabberwocky.txt
++++ b/poems/Jabberwocky.txt
+@@ -4,7 +4,7 @@
+      Beware the Jubjub bird, and shun
+       The frumious Bandersnatch!’
+ 
+-     He took his vorpal blade in hand:
+-      Long time the manxome foe he sought--
++     He took his vorpal sword in hand:
++      Long time the manxome foe he sought—
+      So rested he by the Tumtum tree,
+       And stood awhile in thought.
+"#;
+
+        assert_eq!(
+            suggestion.diff_with_repo(&repo),
+            expected,
+        );
     }
 
     #[test]
