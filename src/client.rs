@@ -22,10 +22,16 @@ pub struct Client<'a> {
 }
 
 impl<'a> Client<'a> {
-    pub fn new(token: &str, owner: &'a str, repo: &'a str) -> Self {
-        let client = Github::new(&token).unwrap();
+    pub fn new(
+        token: &str,
+        owner: &'a str, repo: &'a str,
+    ) -> Result<Self, Error> {
+        let client = match Github::new(&token) {
+            Ok(g) => g,
+            Err(e) => return Err(Error::Github(e.to_string())),
+        };
 
-        Client { client, owner, repo }
+        Ok(Client { client, owner, repo })
     }
 
     pub fn fetch(&self, id: &str) -> Result<Suggestion, Error> {

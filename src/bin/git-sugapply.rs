@@ -17,7 +17,7 @@ fn main() {
         env!("GITHUB_TOKEN"),
         &url.owner,
         &url.repo,
-    );
+    ).unwrap();
 
     let suggestion = client.fetch(&url.comment_id).unwrap();
 
