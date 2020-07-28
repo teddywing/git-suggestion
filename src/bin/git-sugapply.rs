@@ -1,7 +1,7 @@
 use std::env;
 use std::process;
 
-use git_suggested_patch::{Client, SuggestionUrl};
+use github_suggestion::{Client, SuggestionUrl};
 
 
 fn main() {
