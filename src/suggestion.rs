@@ -95,16 +95,6 @@ impl Suggestion {
         )
     }
 
-    fn suggestion_patch(&self) -> String {
-        let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
-        let s = re.replace(&self.comment, "+");
-        s.replace("```", "")
-    }
-
-    fn suggestion(&self) -> String {
-        self.suggestion_with_line_ending(&LineEnding::Lf)
-    }
-
     fn suggestion_with_line_ending(&self, line_ending: &LineEnding) -> String {
         let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
         let s = re.replace(&self.comment, "");
