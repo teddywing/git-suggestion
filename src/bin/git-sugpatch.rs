@@ -21,5 +21,5 @@ fn main() {
 
     let suggestion = client.fetch(&url.comment_id).unwrap();
 
-    print!("{}", suggestion.diff());
+    print!("{}", suggestion.diff().unwrap());
 }

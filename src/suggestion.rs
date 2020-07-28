@@ -9,6 +9,20 @@ use thiserror::Error;
 
 #[derive(Debug, Error)]
 pub enum Error {
+    #[error(transparent)]
+    Git(#[from] git2::Error),
+
+    #[error("{0} is not a blob")]
+    GitObjectNotBlob(git2::Oid),
+
+    #[error("{message}")]
+    BufWriter {
+        source: std::io::IntoInnerError<BufWriter<Vec<u8>>>,
+        message: String,
+    },
+
+    #[error("{0} is not valid UTF-8")]
+    InvalidUtf8(String),
 }
 
 #[derive(Debug, PartialEq)]
@@ -37,28 +51,33 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
-    pub fn diff(&self) -> String {
-        let repo = Repository::open(".").unwrap();
+    pub fn diff(&self) -> Result<String, Error> {
+        let repo = Repository::open(".")?;
 
         self.diff_with_repo(&repo)
     }
 
-    fn diff_with_repo(&self, repo: &Repository) -> String {
-        let commit = repo.find_commit(self.commit.parse().unwrap()).unwrap();
+    fn diff_with_repo(&self, repo: &Repository) -> Result<String, Error> {
+        let commit = repo.find_commit(self.commit.parse()?)?;
 
         let path = Path::new(&self.path);
 
         let object = commit
-            .tree().unwrap()
-            .get_path(path).unwrap()
-            .to_object(&repo).unwrap();
+            .tree()?
+            .get_path(path)?
+            .to_object(&repo)?;
 
-        let blob = object.as_blob().unwrap();
+        let blob = object.as_blob()
+            .ok_or_else(|| Error::GitObjectNotBlob(object.id()))?;
 
         let blob_reader = BufReader::new(blob.content());
         let mut new = BufWriter::new(Vec::new());
-        self.apply_to(blob_reader, &mut new).unwrap();
-        let new_buffer = new.into_inner().unwrap();
+        self.apply_to(blob_reader, &mut new)?;
+        let new_buffer = new.into_inner()
+            .map_err(|e| Error::BufWriter {
+                source: e,
+                message: "unable to read right side of patch".to_owned(),
+            })?;
 
         let mut diff = Patch::from_blob_and_buffer(
             blob,
@@ -66,13 +85,14 @@ impl Suggestion {
             &new_buffer,
             Some(&path),
             None,
-        ).unwrap();
+        )?;
 
-        diff.to_buf()
-            .unwrap()
-            .as_str()
-            .unwrap_or("")
-            .to_owned()
+        Ok(
+            diff.to_buf()?
+                .as_str()
+                .ok_or_else(|| Error::InvalidUtf8("diff".to_owned()))?
+                .to_owned()
+        )
     }
 
     fn suggestion_patch(&self) -> String {
@@ -101,7 +121,7 @@ impl Suggestion {
     pub fn apply(&self) -> Result<(), Error> {
         let repo = Repository::open(".").unwrap();
 
-        let diff_text = self.diff_with_repo(&repo);
+        let diff_text = self.diff_with_repo(&repo).unwrap();
         let diff = git2::Diff::from_buffer(diff_text.as_bytes()).unwrap();
 
         repo.apply(
@@ -330,7 +350,7 @@ index 89840a2..06acdfc 100644
 "#;
 
         assert_eq!(
-            suggestion.diff_with_repo(&repo),
+            suggestion.diff_with_repo(&repo).unwrap(),
             expected,
         );
     }
