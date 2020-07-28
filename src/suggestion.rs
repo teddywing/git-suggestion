@@ -23,6 +23,9 @@ pub enum Error {
 
     #[error("{0} is not valid UTF-8")]
     InvalidUtf8(String),
+
+    #[error("Regex error: {0}")]
+    Regex(#[from] regex::Error),
 }
 
 #[derive(Debug, PartialEq)]
@@ -95,17 +98,20 @@ impl Suggestion {
         )
     }
 
-    fn suggestion_with_line_ending(&self, line_ending: &LineEnding) -> String {
-        let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n").unwrap();
+    fn suggestion_with_line_ending(
+        &self,
+        line_ending: &LineEnding,
+    ) -> Result<String, Error> {
+        let re = Regex::new(r"(?s).*(?-s)```\s*suggestion.*\n")?;
         let s = re.replace(&self.comment, "");
         let s = s.replace("```", "");
 
         // Suggestion blocks use CRLF by default.
         if *line_ending == LineEnding::Lf {
-            return s.replace('\r', "");
+            return Ok(s.replace('\r', ""));
         }
 
-        s
+        Ok(s)
     }
 
     pub fn apply(&self) -> Result<(), Error> {
@@ -145,7 +151,7 @@ impl Suggestion {
                         write!(
                             writer,
                             "{}",
-                            self.suggestion_with_line_ending(&line_ending),
+                            self.suggestion_with_line_ending(&line_ending).unwrap(),
                         ).unwrap();
                     } else if self.original_start_line.is_none()
                             || line_number < self.original_start_line.unwrap()
