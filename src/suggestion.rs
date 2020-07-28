@@ -37,28 +37,6 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
-    // TODO: Rename to `diff`
-    pub fn patch(&self) -> String {
-        let mut diff: Vec<_> = self.diff.lines()
-            .filter(|l| !l.starts_with("-"))
-            .map(|l| {
-                if l.starts_with("+") {
-                    return l.replacen("+", " ", 1);
-                }
-
-                l.to_owned()
-            })
-            .collect();
-
-        let last = diff.len() - 1;
-        diff[last] = diff.last().unwrap()
-            .replacen(" ", "-", 1);
-
-        diff.push(self.suggestion_patch());
-
-        diff.join("\n")
-    }
-
     pub fn diff(&self) -> String {
         let repo = Repository::open(".").unwrap();
 
@@ -191,49 +169,6 @@ fn is_line_crlf(line: &str) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-
-    #[test]
-    fn suggestion_patch_generates_patch() {
-        // Diff from gabgodBB (https://github.com/gabgodBB) and suggestion from
-        // probablycorey (https://github.com/probablycorey) in this pull
-        // request: https://github.com/cli/cli/pull/1123
-
-        let suggestion = Suggestion {
-            diff: r#"@@ -1, 9 +1, 11 @@
- package command
- 
- import (
-+	"bufio" // used to input comment
- 	"errors"
- 	"fmt"
- 	"io"
-+	"os" // used to input comment"#.to_owned(),
-            comment: r#"It's ok to leave these uncommented
-
-```suggestion
-	"os"
-```"#.to_owned(),
-            commit: "".to_owned(),
-            path: "".to_owned(),
-            original_start_line: Some(8),
-            original_end_line: 8,
-        };
-
-        assert_eq!(
-            suggestion.patch(),
-            r#"@@ -1, 9 +1, 11 @@
- package command
- 
- import (
- 	"bufio" // used to input comment
- 	"errors"
- 	"fmt"
- 	"io"
--	"os" // used to input comment
-+	"os"
-"#,
-        );
-    }
 
     #[test]
     fn unified_diff() {
