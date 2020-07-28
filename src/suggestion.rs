@@ -21,6 +21,12 @@ pub enum Error {
         message: String,
     },
 
+    #[error("{message}: {source}")]
+    Io {
+        source: std::io::Error,
+        message: String,
+    },
+
     #[error("{0} is not valid UTF-8")]
     InvalidUtf8(String),
 
@@ -115,16 +121,16 @@ impl Suggestion {
     }
 
     pub fn apply(&self) -> Result<(), Error> {
-        let repo = Repository::open(".").unwrap();
+        let repo = Repository::open(".")?;
 
-        let diff_text = self.diff_with_repo(&repo).unwrap();
-        let diff = git2::Diff::from_buffer(diff_text.as_bytes()).unwrap();
+        let diff_text = self.diff_with_repo(&repo)?;
+        let diff = git2::Diff::from_buffer(diff_text.as_bytes())?;
 
         repo.apply(
             &diff,
             git2::ApplyLocation::WorkDir,
             None,
-        ).unwrap();
+        )?;
 
         Ok(())
     }
@@ -139,27 +145,34 @@ impl Suggestion {
         for (i, line) in reader.lines().enumerate() {
             let line_number = i + 1;
 
-            match line {
-                Ok(l) => {
-                    // Determine which line endings the file uses by looking at
-                    // the first line.
-                    if line_number == 1 && is_line_crlf(&l) {
-                        line_ending = LineEnding::CrLf;
-                    }
+            let line = line.map_err(|e| Error::Io {
+                source: e,
+                message: "Unable to read line".to_owned(),
+            })?;
 
-                    if line_number == self.original_end_line {
-                        write!(
-                            writer,
-                            "{}",
-                            self.suggestion_with_line_ending(&line_ending).unwrap(),
-                        ).unwrap();
-                    } else if self.original_start_line.is_none()
-                            || line_number < self.original_start_line.unwrap()
-                            || line_number > self.original_end_line {
-                        writeln!(writer, "{}", l).unwrap();
-                    }
-                },
-                Err(e) => panic!(e),
+            // Determine which line endings the file uses by looking at the
+            // first line.
+            if line_number == 1 && is_line_crlf(&line) {
+                line_ending = LineEnding::CrLf;
+            }
+
+            if line_number == self.original_end_line {
+                write!(
+                    writer,
+                    "{}",
+                    self.suggestion_with_line_ending(&line_ending)?,
+                ).map_err(|e| Error::Io {
+                    source: e,
+                    message: "Write error".to_owned(),
+                })?;
+            } else if self.original_start_line.is_none()
+                    || line_number < self.original_start_line.unwrap()
+                    || line_number > self.original_end_line {
+                writeln!(writer, "{}", line)
+                    .map_err(|e| Error::Io {
+                        source: e,
+                        message: "Write error".to_owned(),
+                    })?;
             }
         }
 
