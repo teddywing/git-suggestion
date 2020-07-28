@@ -50,23 +50,3 @@ impl<'a> Client<'a> {
         }
     }
 }
-
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    #[ignore]
-    fn suggestion_fetch_gets_pull_request_comment() {
-        let client = Client::new(
-            env!("GITHUB_TOKEN"),
-            "cli",
-            "cli",
-        );
-
-        let suggestion = client.fetch("438947607").unwrap();
-
-        println!("{:?}", suggestion);
-    }
-}
