@@ -1,0 +1,17 @@
+TODO
+
+2020.07.26:
+v Make patch not apply when the file is different from the one in commit (apply()) (2020.07.27)
+- git-sugcommit
+v Replace `unwrap()`s, with errors/Results (2020.07.28)
+v Test `Suggestions.diff()` (2020.07.27)
+
+2020.07.28:
+- Add docs
+x Rename to github-suggestion-patch
+v Rename to github-suggestion
+- Print error messages instead of `unwrap()`s in binaries
+- Binary exit codes
+- Accept multiple suggestion CLI arguments
+- Accept suggestion comment IDs as CLI args, get repo owner and name from local Git remote
+- Man pages
