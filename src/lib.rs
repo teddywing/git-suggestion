@@ -6,8 +6,6 @@ mod url;
 pub use crate::url::SuggestionUrl;
 
 
-use std::fs;
-use std::fs::{File, OpenOptions};
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
 
@@ -17,7 +15,6 @@ use regex::Regex;
 use serde::Deserialize;
 use serde_json::Value;
 use thiserror::Error;
-use tempfile::NamedTempFile;
 
 
 #[derive(Debug, Error)]
@@ -177,23 +174,17 @@ impl Suggestion {
 
     pub fn apply(&self) -> Result<(), Error> {
         let repo = Repository::open(".").unwrap();
-        let repo_root = repo.workdir().unwrap();
 
-        // let original = File::open(repo_root.join(&self.path)).unwrap();
-        // let metadata = original.metadata().unwrap();
-        // let created_at = metadata.created().unwrap();
+        let diff_text = self.diff_with_repo(&repo);
+        let diff = git2::Diff::from_buffer(diff_text.as_bytes()).unwrap();
 
-        let new = NamedTempFile::new().unwrap();
+        repo.apply(
+            &diff,
+            git2::ApplyLocation::WorkDir,
+            None,
+        ).unwrap();
 
-        fs::copy(repo_root.join(&self.path), new.path()).unwrap();
-
-        let mut original = OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .open(repo_root.join(&self.path)).unwrap();
-
-        let new_buffer = BufReader::new(new);
-        self.apply_to(new_buffer, &mut original)
+        Ok(())
     }
 
     fn apply_to<R: BufRead, W: Write>(
