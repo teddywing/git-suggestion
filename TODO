@@ -15,3 +15,6 @@ v Rename to github-suggestion
 - Accept multiple suggestion CLI arguments
 - Accept suggestion comment IDs as CLI args, get repo owner and name from local Git remote
 - Man pages
+
+2020.07.29:
+- Get GitHub token from env variable, command line argument, or config
