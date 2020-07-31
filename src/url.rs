@@ -16,6 +16,9 @@ pub enum Error {
 
     #[error("URL has no fragment")]
     NoFragment,
+
+    #[error("Unable to parse owner or repo")]
+    NoOwnerRepo,
 }
 
 #[derive(Debug)]
@@ -33,6 +36,10 @@ impl FromStr for SuggestionUrl {
         let path = url.path_segments()
             .ok_or(Error::NoPath)?
             .collect::<Vec<_>>();
+
+        if path.len() < 2 {
+            return Err(Error::NoOwnerRepo);
+        }
 
         Ok(SuggestionUrl {
             owner: path[0].to_owned(),
