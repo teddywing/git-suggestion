@@ -1,0 +1,9 @@
+[package]
+name = "github-suggestion-config"
+version = "0.0.1"
+edition = "2018"
+
+[dependencies]
+git2 = "0.13.8"
+thiserror = "1.0.20"
+url = "2.1.1"

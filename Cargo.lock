@@ -264,10 +264,20 @@ version = "0.0.1"
 dependencies = [
  "git2",
  "github-rs",
+ "github-suggestion-config",
  "regex",
  "serde",
  "serde_json",
  "tempfile",
+ "thiserror",
+ "url",
+]
+
+[[package]]
+name = "github-suggestion-config"
+version = "0.0.1"
+dependencies = [
+ "git2",
  "thiserror",
  "url",
 ]
