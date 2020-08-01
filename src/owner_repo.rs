@@ -41,7 +41,12 @@ impl FromStr for OwnerRepo {
     type Err = OwnerRepoError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        let url = Url::parse(s)?;
+        let url = match Url::parse(s) {
+            Err(url::ParseError::RelativeUrlWithoutBase) =>
+                return OwnerRepo::from_ssh(s),
+
+            r => r,
+        }?;
         let path = url.path_segments()
             .ok_or(OwnerRepoError::NoPath)?
             .collect::<Vec<_>>();
@@ -73,5 +78,26 @@ impl OwnerRepo {
             .ok_or_else(|| Error::NoRemote(remote_name.to_owned()))?;
 
         Ok(url.parse()?)
+    }
+
+    pub fn from_ssh(ssh: &str) -> Result<Self, OwnerRepoError> {
+        let address_path: Vec<_> = ssh.splitn(2, ':').collect();
+        let path = address_path.get(1)
+            .ok_or(OwnerRepoError::NoOwnerRepo)?;
+
+        let path = path
+            .strip_suffix(".git")
+            .unwrap_or(path);
+
+        let segments: Vec<_> = path.split('/').collect();
+
+        if segments.len() < 2 {
+            return Err(OwnerRepoError::NoOwnerRepo);
+        }
+
+        Ok(OwnerRepo {
+            owner: segments[0].to_owned(),
+            repo: segments[1].to_owned(),
+        })
     }
 }
