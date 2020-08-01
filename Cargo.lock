@@ -264,7 +264,7 @@ version = "0.0.1"
 dependencies = [
  "git2",
  "github-rs",
- "github-suggestion-config",
+ "github-suggestion-cli",
  "regex",
  "serde",
  "serde_json",
@@ -274,7 +274,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "github-suggestion-config"
+name = "github-suggestion-cli"
 version = "0.0.1"
 dependencies = [
  "git2",
