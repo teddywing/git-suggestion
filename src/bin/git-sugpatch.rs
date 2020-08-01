@@ -1,8 +1,10 @@
 use std::env;
 use std::process;
 
-use github_suggestion::{Client, SuggestionUrl};
+use github_suggestion::{Client, Suggestion, SuggestionUrl};
 use github_suggestion_cli::config::Config;
+use github_suggestion_cli::error::Error;
+use github_suggestion_cli::is_suggestion_id;
 
 
 fn main() {
@@ -10,19 +12,56 @@ fn main() {
 
     let config = Config::get(&args).unwrap();
 
-    if args.len() < 2 {
+    if config.suggestions.is_empty() {
         process::exit(111);
     }
 
-    let url: SuggestionUrl = args[1].parse().unwrap();
+    let suggestions: Vec<Result<Suggestion, Error>> = config.suggestions
+        .iter()
+        .map(|s| {
+            let suggestion = if is_suggestion_id(s)? {
+                let client = Client::new(
+                    &config.github_token,
+                    &config.owner,
+                    &config.repo,
+                ).unwrap();
 
-    let client = Client::new(
-        &config.github_token,
-        &config.owner,
-        &config.repo,
-    ).unwrap();
+                client.fetch(&s).unwrap()
+            } else {
+                let url: SuggestionUrl = args[1].parse().unwrap();
 
-    let suggestion = client.fetch(&url.comment_id).unwrap();
+                let client = Client::new(
+                    &config.github_token,
+                    &url.owner,
+                    &url.repo,
+                ).unwrap();
 
-    print!("{}", suggestion.diff().unwrap());
+                client.fetch(&url.comment_id).unwrap()
+            };
+
+            Ok(suggestion)
+        })
+        .collect();
+
+    let errors: Vec<&Error> = suggestions.iter()
+        .filter(|r| r.is_err())
+
+        // We know these `Results` are `Err`s.
+        .map(|r| r.as_ref().err().unwrap())
+        .collect();
+
+    if !errors.is_empty() {
+        for error in errors {
+            eprintln!("error: {}", error);
+        }
+
+        return;
+    }
+
+    suggestions
+        .iter()
+
+        // We've already checked for `Err`s above.
+        .map(|r| r.as_ref().unwrap())
+        .for_each(|s| print!("{}", s.diff().unwrap()));
 }
