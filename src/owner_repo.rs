@@ -57,19 +57,21 @@ impl FromStr for OwnerRepo {
     }
 }
 
-pub fn identifier_for_remote(
-    remote_name: Option<&str>,
-) -> Result<OwnerRepo, Error> {
-    let repo = Repository::open(".")?;
+impl OwnerRepo {
+    pub fn from_remote(
+        remote_name: Option<&str>,
+    ) -> Result<OwnerRepo, Error> {
+        let repo = Repository::open(".")?;
 
-    let remote_name = match remote_name {
-        Some(r) => r,
-        None => "origin",
-    };
+        let remote_name = match remote_name {
+            Some(r) => r,
+            None => "origin",
+        };
 
-    let remote = repo.find_remote(remote_name)?;
-    let url = remote.url()
-        .ok_or_else(|| Error::NoRemote(remote_name.to_owned()))?;
+        let remote = repo.find_remote(remote_name)?;
+        let url = remote.url()
+            .ok_or_else(|| Error::NoRemote(remote_name.to_owned()))?;
 
-    Ok(url.parse()?)
+        Ok(url.parse()?)
+    }
 }
