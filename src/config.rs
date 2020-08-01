@@ -43,15 +43,9 @@ impl Config {
 
         let git_config = Repository::open(".")?.config()?;
 
-        let remote = match opt_matches.opt_str("remote") {
-            Some(r) => Ok(Some(r)),
-            None => match git_config.get_string(&git_config_key("remote")) {
-                Err(e) if e.code() == git2::ErrorCode::NotFound => Ok(None),
-                r => r.map(|r| Some(r)),
-            },
-        }?;
-
-        let o_r = OwnerRepo::from_remote(remote.as_deref())?;
+        let o_r = OwnerRepo::from_remote(
+            Self::remote(&opt_matches, &git_config)?.as_deref(),
+        )?;
 
         Ok(Config {
             github_token: Self::github_token(&opt_matches, &git_config)?,
@@ -73,6 +67,19 @@ impl Config {
                             .map_err(|e| Error::EnvVar(e)),
                     r => r.map_err(|e| Error::Git(e)),
                 },
+        }
+    }
+
+    fn remote(
+        opt_matches: &getopts::Matches,
+        git_config: &git2::Config,
+    ) -> Result<Option<String>, git2::Error> {
+        match opt_matches.opt_str("remote") {
+            Some(r) => Ok(Some(r)),
+            None => match git_config.get_string(&git_config_key("remote")) {
+                Err(e) if e.code() == git2::ErrorCode::NotFound => Ok(None),
+                r => r.map(|r| Some(r)),
+            },
         }
     }
 }
