@@ -1,7 +1,10 @@
 use std::env;
 use std::process;
 
+use exitcode;
+
 use github_suggestion::{Client, Suggestion, SuggestionUrl};
+use github_suggestion_cli::gseprintln;
 use github_suggestion_cli::config::Config;
 use github_suggestion_cli::error::Error;
 use github_suggestion_cli::is_suggestion_id;
@@ -10,7 +13,14 @@ use github_suggestion_cli::is_suggestion_id;
 fn main() {
     let args: Vec<_> = env::args().collect();
 
-    let config = Config::get(&args).unwrap();
+    let config = match Config::get(&args) {
+        Ok(c) => c,
+        Err(e) => {
+            gseprintln!(e);
+
+            process::exit(exitcode::DATAERR);
+        },
+    };
 
     if config.suggestions.is_empty() {
         process::exit(111);
