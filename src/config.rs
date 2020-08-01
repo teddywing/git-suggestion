@@ -29,6 +29,7 @@ pub struct Config {
     pub github_token: String,
     pub owner: String,
     pub repo: String,
+    pub suggestions: Vec<String>,
 }
 
 impl Config {
@@ -51,6 +52,7 @@ impl Config {
             github_token: Self::github_token(&opt_matches, &git_config)?,
             owner: o_r.owner,
             repo: o_r.repo,
+            suggestions: opt_matches.free,
         })
     }
 
