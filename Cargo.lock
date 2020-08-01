@@ -276,7 +276,10 @@ dependencies = [
 name = "github-suggestion-cli"
 version = "0.0.1"
 dependencies = [
+ "git2",
  "github-suggestion",
+ "thiserror",
+ "url",
 ]
 
 [[package]]
