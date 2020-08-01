@@ -1,7 +1,7 @@
 use std::env;
 
-use getopts::Options;
-use git2::Repository;
+use getopts::{self, Options};
+use git2::{self, Repository};
 use thiserror::Error;
 
 use crate::owner_repo::{self, OwnerRepo};
@@ -43,17 +43,6 @@ impl Config {
 
         let git_config = Repository::open(".")?.config()?;
 
-        let github_token = match opt_matches.opt_str("github-token") {
-            Some(t) => Ok(t),
-            None =>
-                match git_config.get_string(&git_config_key("githubToken")) {
-                    Err(e) if e.code() == git2::ErrorCode::NotFound =>
-                        env::var("GITHUB_TOKEN")
-                            .map_err(|e| Error::EnvVar(e)),
-                    r => r.map_err(|e| Error::Git(e)),
-                },
-        }?;
-
         let remote = match opt_matches.opt_str("remote") {
             Some(r) => Ok(Some(r)),
             None => match git_config.get_string(&git_config_key("remote")) {
@@ -65,10 +54,26 @@ impl Config {
         let o_r = OwnerRepo::from_remote(remote.as_deref())?;
 
         Ok(Config {
-            github_token,
+            github_token: Self::github_token(&opt_matches, &git_config)?,
             owner: o_r.owner,
             repo: o_r.repo,
         })
+    }
+
+    fn github_token(
+        opt_matches: &getopts::Matches,
+        git_config: &git2::Config,
+    ) -> Result<String, Error> {
+        match opt_matches.opt_str("github-token") {
+            Some(t) => Ok(t),
+            None =>
+                match git_config.get_string(&git_config_key("githubToken")) {
+                    Err(e) if e.code() == git2::ErrorCode::NotFound =>
+                        env::var("GITHUB_TOKEN")
+                            .map_err(|e| Error::EnvVar(e)),
+                    r => r.map_err(|e| Error::Git(e)),
+                },
+        }
     }
 }
 
