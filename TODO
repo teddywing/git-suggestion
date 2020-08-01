@@ -18,3 +18,6 @@ v Rename to github-suggestion
 
 2020.07.29:
 - Get GitHub token from env variable, command line argument, or config
+
+2020.08.01:
+- Use colour output when printing diff to tty
