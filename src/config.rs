@@ -11,7 +11,7 @@ const GIT_CONFIG_PREFIX: &'static str = "githubSuggestion.";
 
 #[derive(Debug, Error)]
 pub enum Error {
-    #[error("Unable to parse arguments")]
+    #[error("Unable to parse arguments: {0}")]
     Opts(#[from] getopts::Fail),
 
     #[error("Error getting environment variable")]
