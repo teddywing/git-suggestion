@@ -29,23 +29,53 @@ where F: Fn(&Suggestion)
                 },
             };
 
-            let client = Client::new(
+            let client = match Client::new(
                 &config.github_token,
                 &o_r.owner,
                 &o_r.repo,
-            ).unwrap();
+            ) {
+                Ok(c) => c,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::SOFTWARE);
+                },
+            };
 
-            client.fetch(&suggestion_arg).unwrap()
+            match client.fetch(&suggestion_arg) {
+                Ok(s) => s,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::UNAVAILABLE);
+                },
+            }
         } else {
-            let url: SuggestionUrl = suggestion_arg.parse().unwrap();
+            let url: SuggestionUrl = match suggestion_arg.parse() {
+                Ok(u) => u,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::USAGE);
+                },
+            };
 
-            let client = Client::new(
+            let client = match Client::new(
                 &config.github_token,
                 &url.owner,
                 &url.repo,
-            ).unwrap();
+            ) {
+                Ok(c) => c,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::SOFTWARE);
+                },
+            };
 
-            client.fetch(&url.comment_id).unwrap()
+            match client.fetch(&url.comment_id) {
+                Ok(s) => s,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::UNAVAILABLE);
+                },
+            }
         };
 
         f(&suggestion);
