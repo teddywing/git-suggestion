@@ -20,7 +20,7 @@ fn main() {
     };
 
     if config.suggestions.is_empty() {
-        process::exit(111);
+        process::exit(exitcode::USAGE);
     }
 
     for_suggestion(
