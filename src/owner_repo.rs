@@ -6,6 +6,7 @@ use url;
 use url::Url;
 
 
+/// Errors getting an `OwnerRepo` from a remote in a Git repository.
 #[derive(Debug, Error)]
 pub enum Error {
     #[error(transparent)]
@@ -18,6 +19,7 @@ pub enum Error {
     NoRemote(String),
 }
 
+/// Errors parsing an `OwnerRepo`.
 #[derive(Debug, Error)]
 pub enum OwnerRepoError {
     #[error("Unable to parse URL")]
@@ -37,6 +39,9 @@ pub struct OwnerRepo {
     pub repo: String,
 }
 
+/// Parse an owner-repo pair from a Git remote. Can be either an HTTP URL
+/// (`https://github.com/teddywing/github-suggestion.git`) or an SSH-style
+/// reference (`git@github.com:teddywing/github-suggestion.git`).
 impl FromStr for OwnerRepo {
     type Err = OwnerRepoError;
 
@@ -63,6 +68,8 @@ impl FromStr for OwnerRepo {
 }
 
 impl OwnerRepo {
+    /// Parse an `OwnerRepo` from the URL for `remote_name` in the current
+    /// repository.
     pub fn from_remote(
         remote_name: Option<&str>,
     ) -> Result<OwnerRepo, Error> {
@@ -80,6 +87,8 @@ impl OwnerRepo {
         Ok(url.parse()?)
     }
 
+    /// Parse an `OwnerRepo` from an SSH-style reference
+    /// (`git@github.com:teddywing/github-suggestion.git`).
     pub fn from_ssh(ssh: &str) -> Result<Self, OwnerRepoError> {
         let address_path: Vec<_> = ssh.splitn(2, ':').collect();
         let path = address_path.get(1)

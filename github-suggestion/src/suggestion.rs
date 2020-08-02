@@ -40,6 +40,7 @@ enum LineEnding {
     CrLf,
 }
 
+/// A suggestion comment extracted from the GitHub API.
 #[derive(Debug, Deserialize)]
 pub struct Suggestion {
     #[serde(rename = "diff_hunk")]
@@ -60,12 +61,14 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
+    /// Get the suggestion diff for the current repository.
     pub fn diff(&self) -> Result<String, Error> {
         let repo = Repository::open(".")?;
 
         self.diff_with_repo(&repo)
     }
 
+    /// Get the suggestion diff for `repo`.
     fn diff_with_repo(&self, repo: &Repository) -> Result<String, Error> {
         let commit = repo.find_commit(self.commit.parse()?)?;
 
@@ -104,6 +107,7 @@ impl Suggestion {
         )
     }
 
+    /// Extract suggestion code from a comment body.
     fn suggestion_with_line_ending(
         &self,
         line_ending: &LineEnding,
@@ -120,6 +124,7 @@ impl Suggestion {
         Ok(s)
     }
 
+    /// Apply the suggestion to the current repository.
     pub fn apply(&self) -> Result<(), Error> {
         let repo = Repository::open(".")?;
 
@@ -135,6 +140,7 @@ impl Suggestion {
         Ok(())
     }
 
+    /// Apply the patch in `reader` to `writer`.
     fn apply_to<R: BufRead, W: Write>(
         &self,
         reader: R,

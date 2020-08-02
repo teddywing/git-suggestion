@@ -6,6 +6,7 @@ use url;
 use url::Url;
 
 
+/// Errors parsing a suggestion URL.
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Unable to parse URL")]
@@ -21,6 +22,7 @@ pub enum Error {
     NoOwnerRepo,
 }
 
+/// The important parts of a suggestion comment URL.
 #[derive(Debug)]
 pub struct SuggestionUrl {
     pub owner: String,
@@ -28,6 +30,8 @@ pub struct SuggestionUrl {
     pub comment_id: String,
 }
 
+/// Parses a URL with the format
+/// `https://github.com/teddywing/github-suggestion/pull/1#discussion_r459691747`.
 impl FromStr for SuggestionUrl {
     type Err = Error;
 

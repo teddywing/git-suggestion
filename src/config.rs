@@ -8,8 +8,10 @@ use thiserror::Error;
 use crate::owner_repo::{self, OwnerRepo};
 
 
+/// Program-specific prefix for Git config values.
 const GIT_CONFIG_PREFIX: &'static str = "githubSuggestion.";
 
+/// Configuration errors.
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("Unable to parse arguments: {0}")]
@@ -28,6 +30,7 @@ pub enum Error {
     Git(#[from] git2::Error),
 }
 
+/// Configuration extracted from config files and command line arguments.
 pub struct Config {
     pub github_token: String,
     pub o_r: Result<OwnerRepo, owner_repo::Error>,
@@ -35,6 +38,8 @@ pub struct Config {
 }
 
 impl Config {
+    /// Set up command line arguments. Extract configuration values from command
+    /// line arguments, Git config, and environment variables.
     pub fn get(args: &[String], usage_brief: &str) -> Result<Self, Error> {
         let mut opts = Options::new();
 
@@ -79,6 +84,11 @@ impl Config {
         })
     }
 
+    /// Get a GitHub token, checking the following places in order:
+    ///
+    /// 1. Command line argument
+    /// 2. Git config
+    /// 3. Environment variable
     fn github_token(
         opt_matches: &getopts::Matches,
         git_config: &git2::Config,
@@ -101,6 +111,12 @@ impl Config {
         }
     }
 
+    /// Get the Git remote name from the following places in order:
+    ///
+    /// 1. Command line argument
+    /// 2. Git config
+    ///
+    /// If the value wasn't set, return `Ok(None)`.
     fn remote(
         opt_matches: &getopts::Matches,
         git_config: &git2::Config,
@@ -115,10 +131,12 @@ impl Config {
     }
 }
 
+/// Print command line usage information to standard output.
 fn print_usage(opts: &Options, brief: &str) {
     print!("{}", opts.usage(brief));
 }
 
+/// Build a Git config key using the program-specific prefix and a subkey.
 fn git_config_key(key: &str) -> String {
     format!("{}.{}", GIT_CONFIG_PREFIX, key)
 }

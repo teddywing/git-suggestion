@@ -9,6 +9,8 @@ use crate::arg::is_suggestion_id;
 use crate::config::Config;
 
 
+/// For all suggestions in `config.suggestions`, fetch the suggestion from the
+/// API and call `f` with it.
 pub fn for_suggestion<F>(config: &Config, f: F)
 where F: Fn(&Suggestion)
 {

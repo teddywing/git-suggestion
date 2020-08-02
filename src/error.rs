@@ -9,6 +9,7 @@ pub enum Error {
 }
 
 
+/// Print to standard error with a program-specific prefix.
 #[macro_export]
 macro_rules! gseprintln {
     ($arg:expr) => ({

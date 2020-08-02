@@ -5,6 +5,7 @@ use thiserror::Error;
 use crate::suggestion::Suggestion;
 
 
+/// Client and network errors.
 #[derive(Debug, Error)]
 pub enum Error {
     #[error("GitHub client error: {0}")]
@@ -15,6 +16,7 @@ pub enum Error {
 }
 
 
+/// A GitHub client wrapper for a specific repository.
 pub struct Client<'a> {
     client: Github,
     owner: &'a str,
@@ -22,6 +24,7 @@ pub struct Client<'a> {
 }
 
 impl<'a> Client<'a> {
+    /// Create a new GitHub client.
     pub fn new(
         token: &str,
         owner: &'a str, repo: &'a str,
@@ -34,6 +37,7 @@ impl<'a> Client<'a> {
         Ok(Client { client, owner, repo })
     }
 
+    /// Fetch a suggestion comment from GitHub by its ID.
     pub fn fetch(&self, id: &str) -> Result<Suggestion, Error> {
         let response = self.client
             .get()
