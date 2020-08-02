@@ -35,7 +35,6 @@ pub struct Config {
 }
 
 impl Config {
-    // fn from_args(args: &env::Args) -> Result<Self, Error> {
     pub fn get(args: &[String]) -> Result<Self, Error> {
         let mut opts = Options::new();
 
