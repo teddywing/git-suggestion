@@ -2,7 +2,8 @@
 
 pub mod config;
 pub mod error;
-pub mod owner_repo;
+
+pub(crate) mod owner_repo;
 
 mod arg;
 
