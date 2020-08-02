@@ -12,12 +12,12 @@ x Rename to github-suggestion-patch
 v Rename to github-suggestion
 - Print error messages instead of `unwrap()`s in binaries
 - Binary exit codes
-- Accept multiple suggestion CLI arguments
-- Accept suggestion comment IDs as CLI args, get repo owner and name from local Git remote
+v Accept multiple suggestion CLI arguments (2020.08.01)
+v Accept suggestion comment IDs as CLI args, get repo owner and name from local Git remote (2020.08.01)
 - Man pages
 
 2020.07.29:
-- Get GitHub token from env variable, command line argument, or config
+v Get GitHub token from env variable, command line argument, or config (2020.08.01)
 
 2020.08.01:
 - Use colour output when printing diff to tty
