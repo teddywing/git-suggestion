@@ -41,7 +41,12 @@ impl<'a> Config<'a> {
     pub fn get(args: &[String], usage_brief: &'a str) -> Result<Self, Error> {
         let mut opts = Options::new();
 
-        opts.optopt("", "github-token", "", "TOKEN");
+        opts.optopt(
+            "",
+            "github-token",
+            r#"GitHub API token with "repo" permission"#,
+            "TOKEN",
+        );
         opts.optopt(
             "",
             "remote",
