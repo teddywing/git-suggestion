@@ -22,12 +22,6 @@ fn main() {
         },
     };
 
-    if config.suggestions.is_empty() {
-        config.print_usage();
-
-        process::exit(exitcode::USAGE);
-    }
-
     for_suggestion(
         &config,
         |suggestion| {

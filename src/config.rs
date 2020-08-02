@@ -28,17 +28,14 @@ pub enum Error {
     Git(#[from] git2::Error),
 }
 
-pub struct Config<'a> {
+pub struct Config {
     pub github_token: String,
     pub o_r: Result<OwnerRepo, owner_repo::Error>,
     pub suggestions: Vec<String>,
-
-    opts: Options,
-    usage_brief: &'a str,
 }
 
-impl<'a> Config<'a> {
-    pub fn get(args: &[String], usage_brief: &'a str) -> Result<Self, Error> {
+impl Config {
+    pub fn get(args: &[String], usage_brief: &str) -> Result<Self, Error> {
         let mut opts = Options::new();
 
         opts.optopt(
@@ -58,7 +55,13 @@ impl<'a> Config<'a> {
         let opt_matches = opts.parse(&args[1..])?;
 
         if opt_matches.opt_present("h") {
-            print!("{}", opts.usage(&usage_brief));
+            print_usage(&opts, usage_brief);
+
+            process::exit(exitcode::USAGE);
+        }
+
+        if opt_matches.free.is_empty() {
+            print_usage(&opts, usage_brief);
 
             process::exit(exitcode::USAGE);
         }
@@ -73,14 +76,7 @@ impl<'a> Config<'a> {
             github_token: Self::github_token(&opt_matches, &git_config)?,
             o_r: o_r,
             suggestions: opt_matches.free,
-
-            opts: opts,
-            usage_brief,
         })
-    }
-
-    pub fn print_usage(&self) {
-        print!("{}", self.opts.usage(&self.usage_brief))
     }
 
     fn github_token(
@@ -117,6 +113,10 @@ impl<'a> Config<'a> {
             },
         }
     }
+}
+
+fn print_usage(opts: &Options, brief: &str) {
+    print!("{}", opts.usage(brief));
 }
 
 fn git_config_key(key: &str) -> String {
