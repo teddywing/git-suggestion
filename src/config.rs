@@ -42,7 +42,12 @@ impl<'a> Config<'a> {
         let mut opts = Options::new();
 
         opts.optopt("", "github-token", "", "TOKEN");
-        opts.optopt("", "remote", "", "REMOTE");
+        opts.optopt(
+            "",
+            "remote",
+            "remote name, defaults to 'origin'",
+            "REMOTE",
+        );
         opts.optflag("h", "help", "print this help menu");
 
         let opt_matches = opts.parse(&args[1..])?;
