@@ -6,6 +6,7 @@ pub mod error;
 pub(crate) mod owner_repo;
 
 mod arg;
+mod suggestion;
 
 
-pub use arg::is_suggestion_id;
+pub use suggestion::for_suggestion;
