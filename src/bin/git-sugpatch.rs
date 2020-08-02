@@ -49,7 +49,7 @@ fn main() {
 
             client.fetch(&suggestion_arg).unwrap()
         } else {
-            let url: SuggestionUrl = args[1].parse().unwrap();
+            let url: SuggestionUrl = suggestion_arg.parse().unwrap();
 
             let client = Client::new(
                 &config.github_token,
