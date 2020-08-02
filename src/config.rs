@@ -14,8 +14,11 @@ pub enum Error {
     #[error("Unable to parse arguments: {0}")]
     Opts(#[from] getopts::Fail),
 
-    #[error("Error getting environment variable")]
-    EnvVar(#[from] env::VarError),
+    #[error("Error getting environment variable '{var}'")]
+    EnvVar {
+        source: env::VarError,
+        var: String,
+    },
 
     #[error(transparent)]
     OwnerRepo(#[from] owner_repo::Error),
@@ -62,9 +65,15 @@ impl Config {
             Some(t) => Ok(t),
             None =>
                 match git_config.get_string(&git_config_key("githubToken")) {
-                    Err(e) if e.code() == git2::ErrorCode::NotFound =>
-                        env::var("GITHUB_TOKEN")
-                            .map_err(|e| Error::EnvVar(e)),
+                    Err(e) if e.code() == git2::ErrorCode::NotFound => {
+                        let key = "GITHUB_TOKEN";
+
+                        env::var(key)
+                            .map_err(|e| Error::EnvVar {
+                                source: e,
+                                var: key.to_owned(),
+                            })
+                    },
                     r => r.map_err(|e| Error::Git(e)),
                 },
         }
