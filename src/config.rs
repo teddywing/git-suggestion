@@ -27,8 +27,7 @@ pub enum Error {
 #[derive(Debug)]
 pub struct Config {
     pub github_token: String,
-    pub owner: String,
-    pub repo: String,
+    pub o_r: Result<OwnerRepo, owner_repo::Error>,
     pub suggestions: Vec<String>,
 }
 
@@ -46,12 +45,11 @@ impl Config {
 
         let o_r = OwnerRepo::from_remote(
             Self::remote(&opt_matches, &git_config)?.as_deref(),
-        )?;
+        );
 
         Ok(Config {
             github_token: Self::github_token(&opt_matches, &git_config)?,
-            owner: o_r.owner,
-            repo: o_r.repo,
+            o_r: o_r,
             suggestions: opt_matches.free,
         })
     }
