@@ -25,6 +25,16 @@ fn main() {
 
     for_suggestion(
         &config,
-        |suggestion| print!("{}", suggestion.diff().unwrap()),
+        |suggestion| {
+            let diff = match suggestion.diff() {
+                Ok(d) => d,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::UNAVAILABLE);
+                },
+            };
+
+            print!("{}", diff);
+        },
     );
 }
