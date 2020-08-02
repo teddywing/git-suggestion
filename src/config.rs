@@ -1,4 +1,5 @@
 use std::env;
+use std::process;
 
 use getopts::{self, Options};
 use git2::{self, Repository};
@@ -27,22 +28,30 @@ pub enum Error {
     Git(#[from] git2::Error),
 }
 
-pub struct Config {
+pub struct Config<'a> {
     pub github_token: String,
     pub o_r: Result<OwnerRepo, owner_repo::Error>,
     pub suggestions: Vec<String>,
 
     opts: Options,
+    usage_brief: &'a str,
 }
 
-impl Config {
-    pub fn get(args: &[String]) -> Result<Self, Error> {
+impl<'a> Config<'a> {
+    pub fn get(args: &[String], usage_brief: &'a str) -> Result<Self, Error> {
         let mut opts = Options::new();
 
         opts.optopt("", "github-token", "", "TOKEN");
         opts.optopt("", "remote", "", "REMOTE");
+        opts.optflag("h", "help", "print this help menu");
 
         let opt_matches = opts.parse(&args[1..])?;
+
+        if opt_matches.opt_present("h") {
+            print!("{}", opts.usage(&usage_brief));
+
+            process::exit(exitcode::USAGE);
+        }
 
         let git_config = Repository::open(".")?.config()?;
 
@@ -56,11 +65,12 @@ impl Config {
             suggestions: opt_matches.free,
 
             opts: opts,
+            usage_brief,
         })
     }
 
-    pub fn usage(&self, brief: &str) -> String {
-        self.opts.usage(&brief)
+    pub fn print_usage(&self) {
+        print!("{}", self.opts.usage(&self.usage_brief))
     }
 
     fn github_token(

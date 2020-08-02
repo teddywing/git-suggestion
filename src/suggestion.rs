@@ -9,7 +9,7 @@ use crate::arg::is_suggestion_id;
 use crate::config::Config;
 
 
-pub fn for_suggestion<F>(config: &Config, f: F)
+pub fn for_suggestion<F>(config: &Config<'_>, f: F)
 where F: Fn(&Suggestion)
 {
     for suggestion_arg in &config.suggestions {
