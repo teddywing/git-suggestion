@@ -27,11 +27,12 @@ pub enum Error {
     Git(#[from] git2::Error),
 }
 
-#[derive(Debug)]
 pub struct Config {
     pub github_token: String,
     pub o_r: Result<OwnerRepo, owner_repo::Error>,
     pub suggestions: Vec<String>,
+
+    opts: Options,
 }
 
 impl Config {
@@ -53,7 +54,13 @@ impl Config {
             github_token: Self::github_token(&opt_matches, &git_config)?,
             o_r: o_r,
             suggestions: opt_matches.free,
+
+            opts: opts,
         })
+    }
+
+    pub fn usage(&self, brief: &str) -> String {
+        self.opts.usage(&brief)
     }
 
     fn github_token(

@@ -20,6 +20,11 @@ fn main() {
     };
 
     if config.suggestions.is_empty() {
+        print!(
+            "{}",
+            config.usage("usage: git sugpatch [options] <suggestion>..."),
+        );
+
         process::exit(exitcode::USAGE);
     }
 
