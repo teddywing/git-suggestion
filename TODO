@@ -7,7 +7,7 @@ v Replace `unwrap()`s, with errors/Results (2020.07.28)
 v Test `Suggestions.diff()` (2020.07.27)
 
 2020.07.28:
-- Add docs
+v Add docs (2020.08.02)
 x Rename to github-suggestion-patch
 v Rename to github-suggestion
 v Print error messages instead of `unwrap()`s in binaries (2020.08.01)
