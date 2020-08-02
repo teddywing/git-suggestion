@@ -22,3 +22,6 @@ v Get GitHub token from env variable, command line argument, or config (2020.08.
 2020.08.01:
 - Use colour output when printing diff to tty
 v Print usage documentation (2020.08.02)
+
+2020.08.02:
+- Add version argument
