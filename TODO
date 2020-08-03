@@ -24,4 +24,4 @@ v Get GitHub token from env variable, command line argument, or config (2020.08.
 v Print usage documentation (2020.08.02)
 
 2020.08.02:
-- Add version argument
+v Add version argument (2020.08.03)
