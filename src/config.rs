@@ -6,6 +6,7 @@ use git2::{self, Repository};
 use thiserror::Error;
 
 use crate::owner_repo::{self, OwnerRepo};
+use crate::VERSION;
 
 
 /// Program-specific prefix for Git config values.
@@ -56,6 +57,7 @@ impl Config {
             "REMOTE",
         );
         opts.optflag("h", "help", "print this help menu");
+        opts.optflag("V", "version", "show the program version");
 
         let opt_matches = opts.parse(&args[1..])?;
 
@@ -63,6 +65,12 @@ impl Config {
             print_usage(&opts, usage_brief);
 
             process::exit(exitcode::USAGE);
+        }
+
+        if opt_matches.opt_present("V") {
+            println!("{}", VERSION);
+
+            process::exit(exitcode::OK);
         }
 
         if opt_matches.free.is_empty() {
