@@ -36,11 +36,11 @@ OPTIONS
 CONFIGURATION
 -------------
 Configuration options can be specified either as command line options,
-or in the Git config.
+or in the Git config. Command line options take precedence.
 
 githubSuggestion.githubToken::
-	A GitHub API token with the “repo” permission. This can also be set
-	with the `GITHUB_TOKEN` environment variable.
+	A GitHub API token with the “repo” permission. This will override
+	the `GITHUB_TOKEN` environment variable.
 
 githubSuggestion.remote::
 	The remote to use to fetch the suggestion from when passing a
