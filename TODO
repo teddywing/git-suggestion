@@ -14,7 +14,7 @@ v Print error messages instead of `unwrap()`s in binaries (2020.08.01)
 v Binary exit codes (2020.08.01)
 v Accept multiple suggestion CLI arguments (2020.08.01)
 v Accept suggestion comment IDs as CLI args, get repo owner and name from local Git remote (2020.08.01)
-- Man pages
+v Man pages (2020.08.03)
 
 2020.07.29:
 v Get GitHub token from env variable, command line argument, or config (2020.08.01)
