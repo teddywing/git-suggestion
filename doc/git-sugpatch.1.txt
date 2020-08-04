@@ -17,7 +17,7 @@ A suggestion reference is either a URL to the comment, or its ID.
 
 OPTIONS
 -------
---github-token::
+--github-token=<token>::
 	A GitHub API token with the “repo” permission. This can also be set
 	with `githubSuggestion.githubToken` or the `GITHUB_TOKEN`
 	environment variable.
@@ -25,7 +25,7 @@ OPTIONS
 -h, --help::
 	Print usage help.
 
---remote::
+--remote=<remote-name>::
 	The remote to use to fetch the suggestion from when passing a
 	suggestion ID. This can also be set with `githubSuggestion.remote`.
 	Defaults to `origin`.

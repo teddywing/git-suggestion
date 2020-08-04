@@ -39,7 +39,7 @@ Show the diffs of the given GitHub suggestion references\&.
 A suggestion reference is either a URL to the comment, or its ID\&.
 .SH "OPTIONS"
 .PP
-\-\-github\-token
+\-\-github\-token=<token>
 .RS 4
 A GitHub API token with the \(lqrepo\(rq permission\&. This can also be set with
 \fBgithubSuggestion\&.githubToken\fR
@@ -53,7 +53,7 @@ environment variable\&.
 Print usage help\&.
 .RE
 .PP
-\-\-remote
+\-\-remote=<remote\-name>
 .RS 4
 The remote to use to fetch the suggestion from when passing a suggestion ID\&. This can also be set with
 \fBgithubSuggestion\&.remote\fR\&. Defaults to
