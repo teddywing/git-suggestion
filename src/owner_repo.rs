@@ -76,9 +76,13 @@ impl FromStr for OwnerRepo {
             return Err(OwnerRepoError::NoOwnerRepo);
         }
 
+        let repo = path[1]
+            .strip_suffix(".git")
+            .unwrap_or(path[1]);
+
         Ok(OwnerRepo {
             owner: path[0].to_owned(),
-            repo: path[1].to_owned(),
+            repo: repo.to_owned(),
         })
     }
 }
