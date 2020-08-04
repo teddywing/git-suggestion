@@ -27,7 +27,7 @@ pub enum Error {
     #[error("GitHub client error: {0}")]
     Github(String),
 
-    #[error("Unable to deserialize")]
+    #[error("Unable to deserialize: {0}")]
     Deserialize(#[from] serde_json::error::Error),
 }
 
