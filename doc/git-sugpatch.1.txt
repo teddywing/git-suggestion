@@ -59,7 +59,7 @@ Suggestion references can be specified either as URLs:
 
 or as comment IDs:
 
-	$ git sugpatch 459692838
+	$ git sugpatch 459691747
 
 They can also be mixed:
 
