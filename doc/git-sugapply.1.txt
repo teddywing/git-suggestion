@@ -1,0 +1,71 @@
+git-sugapply(1)
+===============
+
+NAME
+----
+git-sugapply - Apply GitHub suggestions to files
+
+SYNOPSIS
+--------
+'git sugapply' [options] <suggestion>...
+
+DESCRIPTION
+-----------
+Creates patches from the supplied GitHub suggestions and applies them to
+files.
+
+A suggestion reference is either a URL to the comment, or its ID.
+
+OPTIONS
+-------
+--github-token=<token>::
+	A GitHub API token with the “repo” permission. This can also be set
+	with `githubSuggestion.githubToken` or the `GITHUB_TOKEN`
+	environment variable.
+
+-h, --help::
+	Print usage help.
+
+--remote=<remote-name>::
+	The remote to use to fetch the suggestion from when passing a
+	suggestion ID. This can also be set with `githubSuggestion.remote`.
+	Defaults to `origin`.
+
+-V, --version::
+	Print the program version.
+
+CONFIGURATION
+-------------
+Configuration options can be specified either as command line options,
+or in the Git config. Command line options take precedence.
+
+githubSuggestion.githubToken::
+	A GitHub API token with the “repo” permission. This will override
+	the `GITHUB_TOKEN` environment variable.
+
+githubSuggestion.remote::
+	The remote to use to fetch the suggestion from when passing a
+	suggestion ID. Defaults to `origin`.
+
+ENVIRONMENT VARIABLES
+---------------------
+GITHUB_TOKEN::
+	A GitHub API token with the “repo” permission.
+
+EXAMPLES
+--------
+Suggestion references can be specified either as URLs:
+
+	$ git sugapply https://github.com/teddywing/github-suggestion/pull/1#discussion_r459691747
+
+or as comment IDs:
+
+	$ git sugapply 459691747
+
+They can also be mixed:
+
+	$ git sugapply 459692838 https://github.com/teddywing/github-suggestion/pull/1#discussion_r459691747
+
+SEE ALSO
+--------
+git-sugpatch(1)

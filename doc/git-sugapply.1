@@ -1,0 +1,128 @@
+'\" t
+.\"     Title: git-sugapply
+.\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: 08/04/2020
+.\"    Manual: \ \&
+.\"    Source: \ \&
+.\"  Language: English
+.\"
+.TH "GIT\-SUGAPPLY" "1" "08/04/2020" "\ \&" "\ \&"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+git-sugapply \- Apply GitHub suggestions to files
+.SH "SYNOPSIS"
+.sp
+\fIgit sugapply\fR [options] <suggestion>\&...
+.SH "DESCRIPTION"
+.sp
+Creates patches from the supplied GitHub suggestions and applies them to files\&.
+.sp
+A suggestion reference is either a URL to the comment, or its ID\&.
+.SH "OPTIONS"
+.PP
+\-\-github\-token=<token>
+.RS 4
+A GitHub API token with the \(lqrepo\(rq permission\&. This can also be set with
+\fBgithubSuggestion\&.githubToken\fR
+or the
+\fBGITHUB_TOKEN\fR
+environment variable\&.
+.RE
+.PP
+\-h, \-\-help
+.RS 4
+Print usage help\&.
+.RE
+.PP
+\-\-remote=<remote\-name>
+.RS 4
+The remote to use to fetch the suggestion from when passing a suggestion ID\&. This can also be set with
+\fBgithubSuggestion\&.remote\fR\&. Defaults to
+\fBorigin\fR\&.
+.RE
+.PP
+\-V, \-\-version
+.RS 4
+Print the program version\&.
+.RE
+.SH "CONFIGURATION"
+.sp
+Configuration options can be specified either as command line options, or in the Git config\&. Command line options take precedence\&.
+.PP
+githubSuggestion\&.githubToken
+.RS 4
+A GitHub API token with the \(lqrepo\(rq permission\&. This will override the
+\fBGITHUB_TOKEN\fR
+environment variable\&.
+.RE
+.PP
+githubSuggestion\&.remote
+.RS 4
+The remote to use to fetch the suggestion from when passing a suggestion ID\&. Defaults to
+\fBorigin\fR\&.
+.RE
+.SH "ENVIRONMENT VARIABLES"
+.PP
+GITHUB_TOKEN
+.RS 4
+A GitHub API token with the \(lqrepo\(rq permission\&.
+.RE
+.SH "EXAMPLES"
+.sp
+Suggestion references can be specified either as URLs:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git sugapply https://github\&.com/teddywing/github\-suggestion/pull/1#discussion_r459691747
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+or as comment IDs:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git sugapply 459691747
+.fi
+.if n \{\
+.RE
+.\}
+.sp
+They can also be mixed:
+.sp
+.if n \{\
+.RS 4
+.\}
+.nf
+$ git sugapply 459692838 https://github\&.com/teddywing/github\-suggestion/pull/1#discussion_r459691747
+.fi
+.if n \{\
+.RE
+.\}
+.SH "SEE ALSO"
+.sp
+git\-sugpatch(1)
