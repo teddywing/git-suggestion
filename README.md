@@ -67,12 +67,12 @@ On Mac OS X, Git-Suggestion can be installed with Homebrew:
 
 To compile from source or install on other platforms:
 
-	$ cargo install --git https://github.com/teddywing/git-suggestion.git --root /usr/local
+	$ cargo install --git https://github.com/teddywing/git-suggestion.git
 
 
 ## Uninstall
 
-	$ cargo uninstall --root /usr/local git-suggestion
+	$ cargo uninstall github-suggestion-cli
 
 
 ## License
