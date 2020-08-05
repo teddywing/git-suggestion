@@ -45,8 +45,11 @@ dist: $(DIST_PRODUCTS) $(DIST_MAN_PAGES)
 $(DIST):
 	mkdir -p $@
 
+$(DIST)/share/man/man1: $(DIST)
+	mkdir -p $@
+
 $(DIST_PRODUCTS): $(DIST) $(RELEASE_PRODUCTS)
 	cp $(RELEASE_PRODUCTS) $(DIST)
 
-$(DIST_MAN_PAGES): $(DIST) $(MAN_PAGES)
-	cp $(MAN_PAGES) $(DIST)
+$(DIST_MAN_PAGES): $(DIST)/share/man/man1 $(MAN_PAGES)
+	cp $(MAN_PAGES) $<
