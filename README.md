@@ -1,5 +1,5 @@
-github-suggestion
-=================
+git-suggestion
+==============
 
 Diffs and patches for GitHub pull request suggestions. Given a suggestion ID,
 get a unified diff of the suggested change, or apply it directly to the working
@@ -61,18 +61,18 @@ copy in a Git repository.
 
 
 ## Install
-On Mac OS X, GitHub-Suggestion can be installed with Homebrew:
+On Mac OS X, Git-Suggestion can be installed with Homebrew:
 
-	$ brew install teddywing/formulae/github-suggestion
+	$ brew install teddywing/formulae/git-suggestion
 
 To compile from source or install on other platforms:
 
-	$ cargo install --git https://github.com/teddywing/github-suggestion.git --root /usr/local
+	$ cargo install --git https://github.com/teddywing/git-suggestion.git --root /usr/local
 
 
 ## Uninstall
 
-	$ cargo uninstall --root /usr/local github-suggestion
+	$ cargo uninstall --root /usr/local git-suggestion
 
 
 ## License

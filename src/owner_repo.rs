@@ -56,8 +56,8 @@ pub struct OwnerRepo {
 }
 
 /// Parse an owner-repo pair from a Git remote. Can be either an HTTP URL
-/// (`https://github.com/teddywing/github-suggestion.git`) or an SSH-style
-/// reference (`git@github.com:teddywing/github-suggestion.git`).
+/// (`https://github.com/teddywing/git-suggestion.git`) or an SSH-style
+/// reference (`git@github.com:teddywing/git-suggestion.git`).
 impl FromStr for OwnerRepo {
     type Err = OwnerRepoError;
 
@@ -108,7 +108,7 @@ impl OwnerRepo {
     }
 
     /// Parse an `OwnerRepo` from an SSH-style reference
-    /// (`git@github.com:teddywing/github-suggestion.git`).
+    /// (`git@github.com:teddywing/git-suggestion.git`).
     pub fn from_ssh(ssh: &str) -> Result<Self, OwnerRepoError> {
         let address_path: Vec<_> = ssh.splitn(2, ':').collect();
         let path = address_path.get(1)

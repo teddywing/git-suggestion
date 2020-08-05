@@ -47,7 +47,7 @@ pub struct SuggestionUrl {
 }
 
 /// Parses a URL with the format
-/// `https://github.com/teddywing/github-suggestion/pull/1#discussion_r459691747`.
+/// `https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747`.
 impl FromStr for SuggestionUrl {
     type Err = Error;
 
