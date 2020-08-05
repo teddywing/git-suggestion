@@ -17,7 +17,6 @@
 SOURCES := $(shell find . -name '*.rs')
 MAN_PAGES := $(patsubst doc/%.1.txt,doc/%.1,$(wildcard doc/*.1.txt))
 
-# PRODUCTS := $(patsubst src/bin/%.rs,target/release/%,$(wildcard src/bin/*.rs))
 PRODUCTS := $(patsubst src/bin/%.rs,%,$(wildcard src/bin/*.rs))
 RELEASE_PRODUCTS := $(patsubst %,target/release/%,$(PRODUCTS))
 
