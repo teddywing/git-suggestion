@@ -2,7 +2,7 @@ TODO
 
 2020.07.26:
 v Make patch not apply when the file is different from the one in commit (apply()) (2020.07.27)
-- git-sugcommit
+x git-sugcommit (like `git am`, but use the name and email of the commenter as the author)
 v Replace `unwrap()`s, with errors/Results (2020.07.28)
 v Test `Suggestions.diff()` (2020.07.27)
 
