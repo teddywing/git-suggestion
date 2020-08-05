@@ -275,7 +275,7 @@ dependencies = [
 
 [[package]]
 name = "github-suggestion"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "git2",
  "github-rs",
@@ -289,7 +289,7 @@ dependencies = [
 
 [[package]]
 name = "github-suggestion-cli"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "exitcode",
  "getopts",
