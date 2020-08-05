@@ -14,6 +14,9 @@
 # along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
+VERSION := $(shell fgrep 'const VERSION' src/lib.rs | awk -F '"' '{ print $$2 }')
+TOOLCHAIN := $(shell fgrep default_host_triple $(HOME)/.rustup/settings.toml | awk -F '"' '{ print $$2 }')
+
 SOURCES := $(shell find . -name '*.rs')
 MAN_PAGES := $(patsubst doc/%.1.txt,doc/%.1,$(wildcard doc/*.1.txt))
 
@@ -55,3 +58,10 @@ $(DIST_PRODUCTS): $(DIST)/bin $(RELEASE_PRODUCTS)
 
 $(DIST_MAN_PAGES): $(DIST)/share/man/man1 $(MAN_PAGES)
 	cp $(MAN_PAGES) $<
+
+
+.PHONY: pkg
+pkg: git-suggestion_$(VERSION)_$(TOOLCHAIN).tar.bz2
+
+git-suggestion_$(VERSION)_$(TOOLCHAIN).tar.bz2: dist
+	tar cjv -s /dist/git-suggestion_$(VERSION)_$(TOOLCHAIN)/ -f $@ dist
