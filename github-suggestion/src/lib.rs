@@ -20,6 +20,8 @@
 pub mod client;
 pub mod suggestion;
 
+pub(crate) mod color;
+
 mod url;
 
 pub use crate::client::Client;
