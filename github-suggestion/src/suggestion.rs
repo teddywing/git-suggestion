@@ -16,6 +16,7 @@
 
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
+use std::process::Command;
 
 use git2::{Patch, Repository};
 use regex::Regex;
@@ -45,6 +46,9 @@ pub enum Error {
 
     #[error("{0} is not valid UTF-8")]
     InvalidUtf8(String),
+
+    #[error("unable to convert from UTF-8: {0}")]
+    FromUtf8(#[from] std::str::Utf8Error),
 
     #[error("Regex error: {0}")]
     Regex(#[from] regex::Error),
@@ -121,6 +125,43 @@ impl Suggestion {
                 .ok_or_else(|| Error::InvalidUtf8("diff".to_owned()))?
                 .to_owned()
         )
+    }
+
+    pub fn diff_command(&self) -> Result<(), Error> {
+        let repo = Repository::open(".")?;
+        let commit = repo.find_commit(self.commit.parse()?)?;
+
+        let path = Path::new(&self.path);
+
+        let object = commit
+            .tree()?
+            .get_path(path)?
+            .to_object(&repo)?;
+
+        let blob = object.as_blob()
+            .ok_or_else(|| Error::GitObjectNotBlob(object.id()))?;
+
+        let blob_reader = BufReader::new(blob.content());
+        let mut new = BufWriter::new(Vec::new());
+        self.apply_to(blob_reader, &mut new)?;
+        let new_buffer = new.into_inner()
+            .map_err(|e| Error::BufWriter {
+                source: e,
+                message: "unable to read right side of patch".to_owned(),
+            })?;
+
+        let patched_blob = repo.blob(&new_buffer)?;
+
+        Command::new("git")
+            .arg("diff")
+            .arg(format!("{}:{}", commit.id(), self.path))
+            .arg(patched_blob.to_string())
+            .spawn()
+            .unwrap();
+
+        // Maybe: Return blob
+
+        Ok(())
     }
 
     /// Extract suggestion code from a comment body.
