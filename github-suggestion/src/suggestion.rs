@@ -16,7 +16,6 @@
 
 use std::io::{BufRead, BufReader, BufWriter, Write};
 use std::path::Path;
-use std::process::Command;
 
 use git2::{Patch, Repository};
 use regex::Regex;
@@ -81,6 +80,14 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
+    pub fn commit(&self) -> &str {
+        &self.commit
+    }
+
+    pub fn path(&self) -> &str {
+        &self.path
+    }
+
     /// Get the suggestion diff for the current repository.
     pub fn diff(&self) -> Result<String, Error> {
         let repo = Repository::open(".")?;
@@ -127,7 +134,7 @@ impl Suggestion {
         )
     }
 
-    pub fn diff_command(&self) -> Result<(), Error> {
+    pub fn diff_command(&self) -> Result<git2::Oid, Error> {
         let repo = Repository::open(".")?;
         let commit = repo.find_commit(self.commit.parse()?)?;
 
@@ -150,18 +157,7 @@ impl Suggestion {
                 message: "unable to read right side of patch".to_owned(),
             })?;
 
-        let patched_blob = repo.blob(&new_buffer)?;
-
-        Command::new("git")
-            .arg("diff")
-            .arg(format!("{}:{}", commit.id(), self.path))
-            .arg(patched_blob.to_string())
-            .spawn()
-            .unwrap();
-
-        // Maybe: Return blob
-
-        Ok(())
+        Ok(repo.blob(&new_buffer)?)
     }
 
     /// Extract suggestion code from a comment body.

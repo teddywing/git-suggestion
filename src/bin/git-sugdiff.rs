@@ -16,6 +16,7 @@
 
 use std::env;
 use std::process;
+use std::process::Command;
 
 use exitcode;
 
@@ -42,7 +43,14 @@ fn main() {
         &config,
         |suggestion| {
             // TODO: Needs to work for multiple suggestions at once
-            suggestion.diff_command().unwrap();
+            let blob = suggestion.diff_command().unwrap();
+
+            Command::new("git")
+                .arg("diff")
+                .arg(format!("{}:{}", suggestion.commit(), suggestion.path()))
+                .arg(blob.to_string())
+                .spawn()
+                .unwrap();
         },
     );
 }
