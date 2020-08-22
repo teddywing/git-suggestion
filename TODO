@@ -25,3 +25,9 @@ v Print usage documentation (2020.08.02)
 
 2020.08.02:
 v Add version argument (2020.08.03)
+
+2020.08.21:
+sugpatch:
+- Use `git-diff` to output diffs for colour. Make a blob of the patched file and diff the blobs with `git diff @:src/server.rs 94030f1dd1678a44e4becc955c0f078697c06b47`
+- Pass unrecognised options to `git-diff`
+- Rename to `sugdiff`
