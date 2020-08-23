@@ -43,7 +43,7 @@ fn main() {
         &config,
         |suggestion| {
             // TODO: Needs to work for multiple suggestions at once
-            let blob = suggestion.diff_command().unwrap();
+            let blob = suggestion.blob().unwrap();
 
             Command::new("git")
                 .arg("--no-pager")

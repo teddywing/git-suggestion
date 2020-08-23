@@ -134,7 +134,7 @@ impl Suggestion {
         )
     }
 
-    pub fn diff_command(&self) -> Result<git2::Oid, Error> {
+    pub fn blob(&self) -> Result<git2::Oid, Error> {
         let repo = Repository::open(".")?;
         let commit = repo.find_commit(self.commit.parse()?)?;
 
