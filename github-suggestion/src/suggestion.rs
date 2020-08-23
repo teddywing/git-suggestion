@@ -157,7 +157,27 @@ impl Suggestion {
                 message: "unable to read right side of patch".to_owned(),
             })?;
 
-        Ok(repo.blob(&new_buffer)?)
+        let mut index = repo.index()?;
+        index.add_frombuffer(
+            &git2::IndexEntry {
+                ctime: git2::IndexTime::new(0, 0),
+                mtime: git2::IndexTime::new(0, 0),
+                dev: 0,
+                ino: 0,
+                mode: 0o100644,
+                uid: 0,
+                gid: 0,
+                file_size: new_buffer.len() as u32,
+                id: git2::Oid::zero(),
+                flags: 0,
+                flags_extended: 0,
+                path: self.path.as_bytes().to_vec(),
+            },
+            &new_buffer,
+        )?;
+        let tree = index.write_tree()?;
+
+        Ok(tree)
     }
 
     /// Extract suggestion code from a comment body.

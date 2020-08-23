@@ -43,12 +43,12 @@ fn main() {
         &config,
         |suggestion| {
             // TODO: Needs to work for multiple suggestions at once
-            let blob = suggestion.diff_command().unwrap();
+            let tree = suggestion.diff_command().unwrap();
 
             Command::new("git")
                 .arg("diff")
-                .arg(format!("{}:{}", suggestion.commit(), suggestion.path()))
-                .arg(blob.to_string())
+                .arg(suggestion.commit())
+                .arg(tree.to_string())
                 .spawn()
                 .unwrap();
         },
