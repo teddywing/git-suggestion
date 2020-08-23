@@ -80,10 +80,12 @@ pub struct Suggestion {
 }
 
 impl Suggestion {
+    /// Get the suggestion's commit SHA.
     pub fn commit(&self) -> &str {
         &self.commit
     }
 
+    /// Get the suggestion's file path.
     pub fn path(&self) -> &str {
         &self.path
     }
@@ -134,6 +136,8 @@ impl Suggestion {
         )
     }
 
+    /// Create a Git blob with the contents of the file after applying the
+    /// suggestion.
     pub fn blob(&self) -> Result<git2::Oid, Error> {
         let repo = Repository::open(".")?;
         let commit = repo.find_commit(self.commit.parse()?)?;
