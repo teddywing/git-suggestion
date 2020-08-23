@@ -31,3 +31,4 @@ sugpatch:
 v Use `git-diff` to output diffs for colour. Make a blob of the patched file and diff the blobs with `git diff @:src/server.rs 94030f1dd1678a44e4becc955c0f078697c06b47`
 - Pass unrecognised options to `git-diff`
 v Rename to `sugdiff`
+- Rename crate to `git-suggestion`
