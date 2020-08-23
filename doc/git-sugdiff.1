@@ -1,13 +1,13 @@
 '\" t
-.\"     Title: git-sugpatch
+.\"     Title: git-sugdiff
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/06/2020
+.\"      Date: 08/23/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "GIT\-SUGPATCH" "1" "08/06/2020" "\ \&" "\ \&"
+.TH "GIT\-SUGDIFF" "1" "08/23/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -28,10 +28,10 @@
 .\" * MAIN CONTENT STARTS HERE *
 .\" -----------------------------------------------------------------
 .SH "NAME"
-git-sugpatch \- Show diffs for GitHub suggestions
+git-sugdiff \- Show diffs for GitHub suggestions
 .SH "SYNOPSIS"
 .sp
-\fIgit sugpatch\fR [options] <suggestion>\&...
+\fIgit sugdiff\fR [options] <suggestion>\&...
 .SH "DESCRIPTION"
 .sp
 Show the diffs of the given GitHub suggestion references\&.
@@ -94,7 +94,7 @@ Suggestion references can be specified either as URLs:
 .RS 4
 .\}
 .nf
-$ git sugpatch https://github\&.com/teddywing/git\-suggestion/pull/1#discussion_r459691747
+$ git sugdiff https://github\&.com/teddywing/git\-suggestion/pull/1#discussion_r459691747
 .fi
 .if n \{\
 .RE
@@ -106,7 +106,7 @@ or as comment IDs:
 .RS 4
 .\}
 .nf
-$ git sugpatch 459691747
+$ git sugdiff 459691747
 .fi
 .if n \{\
 .RE
@@ -118,7 +118,7 @@ They can also be mixed:
 .RS 4
 .\}
 .nf
-$ git sugpatch 459692838 https://github\&.com/teddywing/git\-suggestion/pull/1#discussion_r459691747
+$ git sugdiff 459692838 https://github\&.com/teddywing/git\-suggestion/pull/1#discussion_r459691747
 .fi
 .if n \{\
 .RE

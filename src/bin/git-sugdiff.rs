@@ -29,7 +29,7 @@ fn main() {
 
     let config = match Config::get(
         &args,
-        "usage: git sugpatch [options] <suggestion>...",
+        "usage: git sugdiff [options] <suggestion>...",
     ) {
         Ok(c) => c,
         Err(e) => {

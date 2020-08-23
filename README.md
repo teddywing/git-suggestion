@@ -15,7 +15,7 @@ copy in a Git repository.
 	$ git checkout 74a39f3
 	Note: checking out '74a39f3'.
 	…
-	$ git sugpatch https://github.com/cli/cli/pull/1150#discussion_r438352211
+	$ git sugdiff https://github.com/cli/cli/pull/1150#discussion_r438352211
 	diff --git a/pkg/cmd/api/api.go b/pkg/cmd/api/api.go
 	index b4a8dbd..c081b50 100644
 	--- a/pkg/cmd/api/api.go

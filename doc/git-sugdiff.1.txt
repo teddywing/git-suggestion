@@ -1,13 +1,13 @@
-git-sugpatch(1)
-===============
+git-sugdiff(1)
+==============
 
 NAME
 ----
-git-sugpatch - Show diffs for GitHub suggestions
+git-sugdiff - Show diffs for GitHub suggestions
 
 SYNOPSIS
 --------
-'git sugpatch' [options] <suggestion>...
+'git sugdiff' [options] <suggestion>...
 
 DESCRIPTION
 -----------
@@ -55,15 +55,15 @@ EXAMPLES
 --------
 Suggestion references can be specified either as URLs:
 
-	$ git sugpatch https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747
+	$ git sugdiff https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747
 
 or as comment IDs:
 
-	$ git sugpatch 459691747
+	$ git sugdiff 459691747
 
 They can also be mixed:
 
-	$ git sugpatch 459692838 https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747
+	$ git sugdiff 459692838 https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747
 
 SEE ALSO
 --------

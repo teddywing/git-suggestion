@@ -68,4 +68,4 @@ They can also be mixed:
 
 SEE ALSO
 --------
-git-sugpatch(1)
+git-sugdiff(1)
