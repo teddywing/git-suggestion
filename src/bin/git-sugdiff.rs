@@ -46,6 +46,7 @@ fn main() {
             let blob = suggestion.diff_command().unwrap();
 
             Command::new("git")
+                .arg("--no-pager")
                 .arg("diff")
                 .arg(format!("{}:{}", suggestion.commit(), suggestion.path()))
                 .arg(blob.to_string())
