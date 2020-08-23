@@ -42,15 +42,27 @@ fn main() {
     for_suggestion(
         &config,
         |suggestion| {
-            let blob = suggestion.blob().unwrap();
+            let blob = match suggestion.blob() {
+                Ok(b) => b,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::UNAVAILABLE);
+                },
+            };
 
-            Command::new("git")
+            match Command::new("git")
                 .arg("--no-pager")
                 .arg("diff")
                 .arg(format!("{}:{}", suggestion.commit(), suggestion.path()))
                 .arg(blob.to_string())
                 .spawn()
-                .unwrap();
+            {
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::UNAVAILABLE);
+                },
+                _ => (),
+            };
         },
     );
 }
