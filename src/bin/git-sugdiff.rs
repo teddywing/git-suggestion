@@ -42,7 +42,6 @@ fn main() {
     for_suggestion(
         &config,
         |suggestion| {
-            // TODO: Needs to work for multiple suggestions at once
             let blob = suggestion.blob().unwrap();
 
             Command::new("git")
