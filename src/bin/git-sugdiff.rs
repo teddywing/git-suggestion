@@ -27,6 +27,9 @@ use github_suggestion_cli::config::Config;
 fn main() {
     let args: Vec<_> = env::args().collect();
 
+    // TODO: Shift all diff options from args, then pass them to Config::get().
+    // Add diff options to Command call below.
+
     let config = match Config::get(
         &args,
         "usage: git sugdiff [options] <suggestion>...",
