@@ -76,7 +76,7 @@ static FLAGS: [&'static str; 59] = [
     "--ita-invisible-in-index",
 ];
 
-static ARG_OPTIONS: [&'static str; 20] = [
+static OPTIONS: [&'static str; 39] = [
     "-U",
     "--unified",
     "--output",
@@ -97,9 +97,6 @@ static ARG_OPTIONS: [&'static str; 20] = [
     "--src-prefix",
     "--dst-prefix",
     "--line-prefix",
-];
-
-static OPT_OPTIONS: [&'static str; 19] = [
     "--stat",
     "-X",
     "--dirstat",
@@ -125,24 +122,8 @@ static OPT_OPTIONS: [&'static str; 19] = [
 pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
     let mut program_args = Vec::new();
     let mut found_args = Vec::new();
-    let mut add_next_arg = false;
 
     'args: for arg in args {
-        let find_arg_prefix = arg.find('-');
-
-        if add_next_arg
-            && (
-                find_arg_prefix.is_none()
-                || find_arg_prefix != Some(0)
-            )
-        {
-            found_args.push(arg);
-
-            add_next_arg = false;
-
-            continue;
-        }
-
         for flag in FLAGS.iter() {
             if arg.starts_with(flag) {
                 found_args.push(arg);
@@ -151,15 +132,7 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
             }
         }
 
-        for option in &ARG_OPTIONS {
-            if arg.starts_with(option) {
-                found_args.push(arg);
-
-                continue 'args;
-            }
-        }
-
-        for option in &OPT_OPTIONS {
+        for option in OPTIONS.iter() {
             if arg.starts_with(option) {
                 found_args.push(arg);
 
