@@ -22,6 +22,7 @@ use exitcode;
 
 use github_suggestion_cli::{gseprintln, for_suggestion};
 use github_suggestion_cli::config::Config;
+use github_suggestion_cli::diff_options;
 
 
 fn main() {
@@ -29,6 +30,10 @@ fn main() {
 
     // TODO: Shift all diff options from args, then pass them to Config::get().
     // Add diff options to Command call below.
+
+    let (args, diff_args) = diff_options::parse(&args);
+    dbg!(&args);
+    dbg!(&diff_args);
 
     let config = match Config::get(
         &args,
@@ -56,6 +61,7 @@ fn main() {
             match Command::new("git")
                 .arg("--no-pager")
                 .arg("diff")
+                .args(&diff_args)
                 .arg(format!("{}:{}", suggestion.commit(), suggestion.path()))
                 .arg(blob.to_string())
                 .spawn()

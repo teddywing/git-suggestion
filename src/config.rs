@@ -15,6 +15,7 @@
 
 
 use std::env;
+use std::ffi::OsStr;
 use std::process;
 
 use getopts::{self, Options};
@@ -57,7 +58,9 @@ pub struct Config {
 impl Config {
     /// Set up command line arguments. Extract configuration values from command
     /// line arguments, Git config, and environment variables.
-    pub fn get(args: &[String], usage_brief: &str) -> Result<Self, Error> {
+    // pub fn get<C: IntoIterator>(args: C, usage_brief: &str) -> Result<Self, Error>
+    // where C::Item: AsRef<OsStr>
+    pub fn get<S: AsRef<OsStr>>(args: &[S], usage_brief: &str) -> Result<Self, Error> {
         let mut opts = Options::new();
 
         opts.optopt(

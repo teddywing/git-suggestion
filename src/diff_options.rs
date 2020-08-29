@@ -165,13 +165,15 @@ static OPT_OPTIONS: [&'static str; 19] = [
 
 
 // pub fn parse(args: &[String]) -> &[String] {
-pub fn parse(args: &[String]) -> Vec<&String> {
+pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
+    let mut program_args = Vec::new();
     let mut found_args = Vec::new();
     let mut add_next_arg = false;
 
-    for arg in args {
+    'args: for arg in args {
         let find_arg_prefix = arg.find('-');
 
+        // TODO: Ignore suggestion args
         if add_next_arg
             && (
                 find_arg_prefix.is_none()
@@ -188,6 +190,8 @@ pub fn parse(args: &[String]) -> Vec<&String> {
         for flag in FLAGS.iter() {
             if arg.starts_with(flag) {
                 found_args.push(arg);
+
+                continue 'args;
             }
         }
 
@@ -216,6 +220,8 @@ pub fn parse(args: &[String]) -> Vec<&String> {
                 if rest.find('=').is_none() {
                     add_next_arg = true;
                 }
+
+                continue 'args;
             }
         }
 
@@ -230,11 +236,16 @@ pub fn parse(args: &[String]) -> Vec<&String> {
                 if rest.find('=').is_none() {
                     add_next_arg = true;
                 }
+
+                continue 'args;
             }
         }
+
+        // TODO: Otherwise, add to normal arguments list
+        program_args.push(arg)
     }
 
-    found_args
+    (program_args, found_args)
 }
 
 
@@ -261,9 +272,9 @@ mod tests {
             "--relative".to_owned(),
         ];
 
-        let options = parse(&args);
+        let (_, diff_opts) = parse(&args);
 
-        assert_eq!(options, vec![
+        assert_eq!(diff_opts, vec![
             "--diff-filter=A",
             "-D",
             "--color",
@@ -276,6 +287,27 @@ mod tests {
             "--stat=50",
             "-M90%",
             "--relative",
+        ]);
+    }
+
+    #[test]
+    fn parse_does_not_consume_suggestion_args() {
+        let args = vec![
+            "--github-token".to_owned(),
+            "MY_TOKEN".to_owned(),
+            "--word-diff".to_owned(),
+            "459692838".to_owned(),
+            "https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747".to_owned(),
+        ];
+
+        let (options, diff_opts) = parse(&args);
+
+        assert_eq!(diff_opts, vec!["--word-diff"]);
+        assert_eq!(options, vec![
+            "--github-token",
+            "MY_TOKEN",
+            "459692838",
+            "https://github.com/teddywing/git-suggestion/pull/1#discussion_r459691747",
         ]);
     }
 }
