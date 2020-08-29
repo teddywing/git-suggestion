@@ -58,7 +58,7 @@ fn main() {
                 },
             };
 
-            match Command::new("git")
+            let mut child = match Command::new("git")
                 .arg("--no-pager")
                 .arg("diff")
                 .args(&diff_args)
@@ -66,6 +66,14 @@ fn main() {
                 .arg(blob.to_string())
                 .spawn()
             {
+                Ok(c) => c,
+                Err(e) => {
+                    gseprintln!(e);
+                    process::exit(exitcode::UNAVAILABLE);
+                },
+            };
+
+            match child.wait() {
                 Err(e) => {
                     gseprintln!(e);
                     process::exit(exitcode::UNAVAILABLE);
