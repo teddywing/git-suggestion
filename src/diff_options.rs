@@ -198,6 +198,7 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
         // TODO: check for "=" and get next arg
         // '='
         // if no equals, then add next arg
+        // Turns out values are always specified with '='
         for option in &ARG_OPTIONS {
             if arg.starts_with(option) {
                 found_args.push(arg);
@@ -217,9 +218,9 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
                 dbg!(rest.find('=').is_none());
                 // if arg.len() > option.len()
                 //         && rest.find('=').is_none() {
-                if rest.find('=').is_none() {
-                    add_next_arg = true;
-                }
+                // if rest.find('=').is_none() {
+                //     add_next_arg = true;
+                // }
 
                 continue 'args;
             }
@@ -227,15 +228,16 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
 
         // check '='
         // If no equals, add next arg if it doesn't begin with '-'
+        // OptOptions are always followed by '=' when specifying values
         for option in &OPT_OPTIONS {
             if arg.starts_with(option) {
                 found_args.push(arg);
 
-                let (_option, rest) = arg.split_at(option.len());
-
-                if rest.find('=').is_none() {
-                    add_next_arg = true;
-                }
+                // let (_option, rest) = arg.split_at(option.len());
+                //
+                // if rest.find('=').is_none() {
+                //     add_next_arg = true;
+                // }
 
                 continue 'args;
             }
@@ -260,12 +262,10 @@ mod tests {
             "MY_TOKEN".to_owned(),
             "--diff-filter=A".to_owned(),
             "-D".to_owned(),
-            "--color".to_owned(),
-            "always".to_owned(),
+            "--color=always".to_owned(),
             "-U5".to_owned(),
             "--patience".to_owned(),
-            "--ws-error-highlight".to_owned(),
-            "old,new".to_owned(),
+            "--ws-error-highlight=old,new".to_owned(),
             "--no-rename-empty".to_owned(),
             "--stat=50".to_owned(),
             "-M90%".to_owned(),
@@ -277,12 +277,10 @@ mod tests {
         assert_eq!(diff_opts, vec![
             "--diff-filter=A",
             "-D",
-            "--color",
-            "always",
+            "--color=always",
             "-U5",
             "--patience",
-            "--ws-error-highlight",
-            "old,new",
+            "--ws-error-highlight=old,new",
             "--no-rename-empty",
             "--stat=50",
             "-M90%",
