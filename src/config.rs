@@ -58,8 +58,6 @@ pub struct Config {
 impl Config {
     /// Set up command line arguments. Extract configuration values from command
     /// line arguments, Git config, and environment variables.
-    // pub fn get<C: IntoIterator>(args: C, usage_brief: &str) -> Result<Self, Error>
-    // where C::Item: AsRef<OsStr>
     pub fn get<S: AsRef<OsStr>>(args: &[S], usage_brief: &str) -> Result<Self, Error> {
         let mut opts = Options::new();
 

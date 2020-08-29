@@ -76,48 +76,6 @@ static FLAGS: [&'static str; 59] = [
     "--ita-invisible-in-index",
 ];
 
-// static OPTIONS: [&'static str; 21] = [
-//     "-U<n>",
-//     "--unified=<n>",
-//     "--output=<file>",
-//     "--output-indicator-new=<char>",
-//     "--output-indicator-old=<char>",
-//     "--output-indicator-context=<char>",
-//     "--anchored=<text>",
-//     "--diff-algorithm={patience|minimal|histogram|myers}",
-//     "--stat[=<width>[,<name-width>[,<count>]]]",
-//     "-X[<param1,param2,...>]",
-//     "--dirstat[=<param1,param2,...>]",
-//     "--dirstat-by-file[=<param1,param2>...]",
-//     "--submodule[=<format>]",
-//     "--color[=<when>]",
-//     "--color-moved[=<mode>]",
-//     "--color-moved-ws=<modes>",
-//     "--word-diff[=<mode>]",
-//     "--word-diff-regex=<regex>",
-//     "--color-words[=<regex>]",
-//     "--ws-error-highlight=<kind>",
-//     "--abbrev[=<n>]",
-//     "-B[<n>][/<m>]",
-//     "--break-rewrites[=[<n>][/<m>]]",
-//     "-M[<n>]",
-//     "--find-renames[=<n>]",
-//     "-C[<n>]",
-//     "--find-copies[=<n>]",
-//     "-l<num>",
-//     "--diff-filter=[(A|C|D|M|R|T|U|X|B)...[*]]",
-//     "-S<string>",
-//     "-G<regex>",
-//     "--find-object=<object-id>",
-//     "-O<orderfile>",
-//     "--relative[=<path>]",
-//     "--inter-hunk-context=<lines>",
-//     "--ignore-submodules[=<when>]",
-//     "--src-prefix=<prefix>",
-//     "--dst-prefix=<prefix>",
-//     "--line-prefix=<prefix>",
-// ];
-
 static ARG_OPTIONS: [&'static str; 20] = [
     "-U",
     "--unified",
@@ -164,7 +122,6 @@ static OPT_OPTIONS: [&'static str; 19] = [
 ];
 
 
-// pub fn parse(args: &[String]) -> &[String] {
 pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
     let mut program_args = Vec::new();
     let mut found_args = Vec::new();
@@ -173,7 +130,6 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
     'args: for arg in args {
         let find_arg_prefix = arg.find('-');
 
-        // TODO: Ignore suggestion args
         if add_next_arg
             && (
                 find_arg_prefix.is_none()
@@ -195,55 +151,22 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
             }
         }
 
-        // TODO: check for "=" and get next arg
-        // '='
-        // if no equals, then add next arg
-        // Turns out values are always specified with '='
         for option in &ARG_OPTIONS {
             if arg.starts_with(option) {
                 found_args.push(arg);
 
-                // if arg doesn't have an = after it
-                // if i < arg.len() {
-                // let char_after_option = arg.get(option.len());
-                // if char_after_option.is_some()
-                //         && char_after_option.unwrap() == '=' {
-
-                let (_option, rest) = arg.split_at(option.len());
-
-                dbg!(arg);
-                dbg!(arg.len());
-                dbg!(option);
-                dbg!(option.len());
-                dbg!(rest.find('=').is_none());
-                // if arg.len() > option.len()
-                //         && rest.find('=').is_none() {
-                // if rest.find('=').is_none() {
-                //     add_next_arg = true;
-                // }
-
                 continue 'args;
             }
         }
 
-        // check '='
-        // If no equals, add next arg if it doesn't begin with '-'
-        // OptOptions are always followed by '=' when specifying values
         for option in &OPT_OPTIONS {
             if arg.starts_with(option) {
                 found_args.push(arg);
 
-                // let (_option, rest) = arg.split_at(option.len());
-                //
-                // if rest.find('=').is_none() {
-                //     add_next_arg = true;
-                // }
-
                 continue 'args;
             }
         }
 
-        // TODO: Otherwise, add to normal arguments list
         program_args.push(arg)
     }
 
@@ -309,102 +232,3 @@ mod tests {
         ]);
     }
 }
-
-// -p
-// --no-stat
-// -p
-// -u
-// --patch
-// -s
-// --no-patch
-// -U<n>
-// --unified=<n>
-// --output=<file>
-// --output-indicator-new=<char>
-// --output-indicator-old=<char>
-// --output-indicator-context=<char>
-// --raw
-// --patch-with-raw
-// -t
-// --indent-heuristic
-// --no-indent-heuristic
-// --minimal
-// --patience
-// --histogram
-// --anchored=<text>
-// --diff-algorithm={patience|minimal|histogram|myers}
-// --stat[=<width>[,<name-width>[,<count>]]]
-// --compact-summary
-// --numstat
-// --shortstat
-// -X[<param1,param2,...>]
-// --dirstat[=<param1,param2,...>]
-// --cumulative
-// --dirstat-by-file[=<param1,param2>...]
-// --summary
-// --patch-with-stat
-// -z
-// --name-only
-// --name-status
-// --submodule[=<format>]
-// --color[=<when>]
-// --no-color
-// --color-moved[=<mode>]
-// --no-color-moved
-// --color-moved-ws=<modes>
-// --no-color-moved-ws
-// --word-diff[=<mode>]
-// --word-diff-regex=<regex>
-// --color-words[=<regex>]
-// --no-renames
-// --[no-]rename-empty
-// --check
-// --ws-error-highlight=<kind>
-// --full-index
-// --binary
-// --abbrev[=<n>]
-// -B[<n>][/<m>]
-// --break-rewrites[=[<n>][/<m>]]
-// -M[<n>]
-// --find-renames[=<n>]
-// -C[<n>]
-// --find-copies[=<n>]
-// --find-copies-harder
-// -D
-// --irreversible-delete
-// -l<num>
-// --diff-filter=[(A|C|D|M|R|T|U|X|B)...[*]]
-// -S<string>
-// -G<regex>
-// -S"frotz\(nitfol" --pickaxe-regex` will not (because the number of
-// --find-object=<object-id>
-// --pickaxe-all
-// --pickaxe-regex
-// -O<orderfile>
-// -R
-// --relative[=<path>]
-// --no-relative
-// -a
-// --text
-// --ignore-cr-at-eol
-// --ignore-space-at-eol
-// -b
-// --ignore-space-change
-// -w
-// --ignore-all-space
-// --ignore-blank-lines
-// --inter-hunk-context=<lines>
-// -W
-// --function-context
-// --exit-code
-// --quiet
-// --ext-diff
-// --no-ext-diff
-// --textconv
-// --no-textconv
-// --ignore-submodules[=<when>]
-// --src-prefix=<prefix>
-// --dst-prefix=<prefix>
-// --no-prefix
-// --line-prefix=<prefix>
-// --ita-invisible-in-index
