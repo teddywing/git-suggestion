@@ -118,12 +118,12 @@ static FLAGS: [&'static str; 98] = [
 
 pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
     let mut program_args = Vec::new();
-    let mut found_args = Vec::new();
+    let mut diff_args = Vec::new();
 
     'args: for arg in args {
         for flag in FLAGS.iter() {
             if arg.starts_with(flag) {
-                found_args.push(arg);
+                diff_args.push(arg);
 
                 continue 'args;
             }
@@ -132,7 +132,7 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
         program_args.push(arg)
     }
 
-    (program_args, found_args)
+    (program_args, diff_args)
 }
 
 
