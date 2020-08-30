@@ -14,7 +14,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
-static FLAGS: [&'static str; 59] = [
+static FLAGS: [&'static str; 98] = [
     "-p",
     "--no-stat",
     "-p",
@@ -74,9 +74,6 @@ static FLAGS: [&'static str; 59] = [
     "--no-textconv",
     "--no-prefix",
     "--ita-invisible-in-index",
-];
-
-static OPTIONS: [&'static str; 39] = [
     "-U",
     "--unified",
     "--output",
@@ -126,14 +123,6 @@ pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
     'args: for arg in args {
         for flag in FLAGS.iter() {
             if arg.starts_with(flag) {
-                found_args.push(arg);
-
-                continue 'args;
-            }
-        }
-
-        for option in OPTIONS.iter() {
-            if arg.starts_with(option) {
                 found_args.push(arg);
 
                 continue 'args;
