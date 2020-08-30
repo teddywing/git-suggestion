@@ -7,7 +7,7 @@ git-sugdiff - Show diffs for GitHub suggestions
 
 SYNOPSIS
 --------
-'git sugdiff' [options] <suggestion>...
+'git sugdiff' [options] [git-diff-options] <suggestion>...
 
 DESCRIPTION
 -----------
@@ -17,6 +17,8 @@ A suggestion reference is either a URL to the comment, or its ID.
 
 OPTIONS
 -------
+All standard Git diff options are supported.
+
 --github-token=<token>::
 	A GitHub API token with the “repo” permission. This can also be set
 	with `githubSuggestion.githubToken` or the `GITHUB_TOKEN`

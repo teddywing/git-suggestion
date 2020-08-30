@@ -2,12 +2,12 @@
 .\"     Title: git-sugdiff
 .\"    Author: [FIXME: author] [see http://docbook.sf.net/el/author]
 .\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
-.\"      Date: 08/23/2020
+.\"      Date: 08/30/2020
 .\"    Manual: \ \&
 .\"    Source: \ \&
 .\"  Language: English
 .\"
-.TH "GIT\-SUGDIFF" "1" "08/23/2020" "\ \&" "\ \&"
+.TH "GIT\-SUGDIFF" "1" "08/30/2020" "\ \&" "\ \&"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -31,13 +31,15 @@
 git-sugdiff \- Show diffs for GitHub suggestions
 .SH "SYNOPSIS"
 .sp
-\fIgit sugdiff\fR [options] <suggestion>\&...
+\fIgit sugdiff\fR [options] [git\-diff\-options] <suggestion>\&...
 .SH "DESCRIPTION"
 .sp
 Show the diffs of the given GitHub suggestion references\&.
 .sp
 A suggestion reference is either a URL to the comment, or its ID\&.
 .SH "OPTIONS"
+.sp
+All standard Git diff options are supported\&.
 .PP
 \-\-github\-token=<token>
 .RS 4
