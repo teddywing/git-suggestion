@@ -20,7 +20,7 @@ v Man pages (2020.08.03)
 v Get GitHub token from env variable, command line argument, or config (2020.08.01)
 
 2020.08.01:
-- Use colour output when printing diff to tty
+v Use colour output when printing diff to tty (2020.08.30)
 v Print usage documentation (2020.08.02)
 
 2020.08.02:
@@ -29,6 +29,6 @@ v Add version argument (2020.08.03)
 2020.08.21:
 sugpatch:
 v Use `git-diff` to output diffs for colour. Make a blob of the patched file and diff the blobs with `git diff @:src/server.rs 94030f1dd1678a44e4becc955c0f078697c06b47`
-- Pass unrecognised options to `git-diff`
+v Pass unrecognised options to `git-diff`
 v Rename to `sugdiff`
-- Rename crate to `git-suggestion`
+v Rename crate to `git-suggestion`
