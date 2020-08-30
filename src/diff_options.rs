@@ -14,6 +14,7 @@
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 
+/// Git diff options.
 static FLAGS: [&'static str; 97] = [
     "--abbrev",
     "--anchored",
@@ -115,6 +116,9 @@ static FLAGS: [&'static str; 97] = [
 ];
 
 
+/// Parse Git diff options from `args`.
+///
+/// Returns a tuple containing `(args-that-are-not-diff-options, diff-options)`.
 pub fn parse(args: &[String]) -> (Vec<&String>, Vec<&String>) {
     let mut program_args = Vec::new();
     let mut diff_args = Vec::new();
