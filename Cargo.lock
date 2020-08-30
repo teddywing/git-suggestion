@@ -244,6 +244,19 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "aaf91faf136cb47367fa430cd46e37a788775e7fa104f8b4bcb3861dc389b724"
 
 [[package]]
+name = "git-suggestion"
+version = "0.1.0"
+dependencies = [
+ "exitcode",
+ "getopts",
+ "git2",
+ "github-suggestion",
+ "regex",
+ "thiserror",
+ "url",
+]
+
+[[package]]
 name = "git2"
 version = "0.13.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -283,19 +296,6 @@ dependencies = [
  "serde",
  "serde_json",
  "tempfile",
- "thiserror",
- "url",
-]
-
-[[package]]
-name = "github-suggestion-cli"
-version = "0.1.0"
-dependencies = [
- "exitcode",
- "getopts",
- "git2",
- "github-suggestion",
- "regex",
  "thiserror",
  "url",
 ]

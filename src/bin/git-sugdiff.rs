@@ -20,9 +20,9 @@ use std::process::Command;
 
 use exitcode;
 
-use github_suggestion_cli::{gseprintln, for_suggestion};
-use github_suggestion_cli::config::Config;
-use github_suggestion_cli::diff_options;
+use git_suggestion::{gseprintln, for_suggestion};
+use git_suggestion::config::Config;
+use git_suggestion::diff_options;
 
 
 fn main() {

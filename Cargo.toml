@@ -1,5 +1,5 @@
 [package]
-name = "github-suggestion-cli"
+name = "git-suggestion"
 version = "0.1.0"
 edition = "2018"
 

@@ -72,7 +72,7 @@ To compile from source or install on other platforms:
 
 ## Uninstall
 
-	$ cargo uninstall github-suggestion-cli
+	$ cargo uninstall git-suggestion
 
 
 ## License
