@@ -1,0 +1,23 @@
+CHANGELOG
+=========
+
+v0.2.0 (2020-08-30):
+	Breaking changes:
+
+	* Rename 'github-suggestion-cli' crate to 'git-suggestion'.
+	* Rename 'git-sugpatch' command to 'git-sugdiff'.
+	* Change signature of `git_suggestion::Config::get()`.
+
+	Additions:
+
+	* git-sugdiff: Accept `git-diff` options.
+
+	Changes:
+
+	* git-sugdiff: Use the `git-diff` command to output diffs. This enables
+	  colour diff output according to your Git config.
+
+v0.1.0 (2020-08-06):
+	First public release.
+
+ vim:tw=80:comments=:fo+=n:formatlistpat=^\\s*\\*\\s*
