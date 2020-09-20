@@ -1,6 +1,11 @@
 CHANGELOG
 =========
 
+v0.2.1 (2020-09-20):
+	Changes:
+
+	* Remove dynamic link to 'openssl' and allow static link to 'libgit2'.
+
 v0.2.0 (2020-08-30):
 	Breaking changes:
 
