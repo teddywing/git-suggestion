@@ -27,6 +27,13 @@ DIST := $(abspath dist)
 DIST_PRODUCTS := $(patsubst %,dist/%,$(PRODUCTS))
 DIST_MAN_PAGES := $(patsubst doc/%,dist/%,$(MAN_PAGES))
 
+# Set STATIC=1 to build a static binary.
+STATIC ?= 0
+
+ifeq ($(STATIC), 1)
+BUILD_VARS += PKG_CONFIG_LIBDIR=''
+endif
+
 
 .PHONY: doc
 doc: $(MAN_PAGES)
@@ -38,7 +45,7 @@ doc/%.1: doc/%.1.txt
 
 
 $(RELEASE_PRODUCTS): $(SOURCES)
-	cargo build --release
+	$(BUILD_VARS) cargo build --release
 
 
 .PHONY: dist
